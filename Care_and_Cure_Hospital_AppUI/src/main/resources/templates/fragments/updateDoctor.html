@@ -1,0 +1,329 @@
+<th:block th:fragment="content">
+    <head>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" th:href="@{/css/doctorstyle.css}">
+    </head>
+    <style>
+         #updateForm { display: none; }
+        .status-message { min-height: 50px; }
+    </style>
+<div>
+		<div id="idEntrySection">
+		        <h3 class="text-primary text-center">Enter Doctor ID</h3>
+		        <form>
+		            <label for="doctorId" class="form-label">Doctor ID:</label>
+		            <input type="number" id="doctorIdInput" name="doctorId" class="form-control mb-2" placeholder="Enter Doctor ID" required>
+		        </form>
+		        <button onclick="fetchDoctorDetails()" class="btn btn-primary w-100">Search</button>
+				<div id="statusMessage" class="status-message mt-4"></div>
+		    </div>
+
+        <!-- Update Form Section -->
+		<form id="updateForm" th:object="${doctor}">
+			<h3 class="text-primary text-center mb-4">Update Doctor Details</h3>
+		            <div class="row g-4">
+		                <!-- Hidden ID Field -->
+		                <input type="hidden" id="doctorId" name="doctorId">
+						<input type="hidden" name="_method" value="PUT"> 
+		<div class="col-md-4">
+			            <label class="form-label"><i class="fas fa-user-md me-2"></i>First Name <span class="required">*</span></label>
+			            <input type="text" id="firstName" class="form-control" required>
+			        </div>
+			        
+			        <div class="col-md-4">
+			            <label class="form-label"><i class="fas fa-user-md me-2"></i>Last Name <span class="required">*</span></label>
+			            <input type="text" id="lastName" class="form-control" required>
+			        </div>
+
+			        <!-- Professional Information -->
+			        <div class="col-md-4">
+			            <label class="form-label"><i class="fas fa-stethoscope me-2"></i>Specialization <span class="required">*</span></label>
+			            <input type="text" id="specialization" class="form-control" required>
+			        </div>
+			        
+			        <div class="col-md-4">
+			            <label class="form-label"><i class="fas fa-graduation-cap me-2"></i>Qualification <span class="required">*</span></label>
+			            <input type="text" id="qualification" class="form-control" required>
+			        </div>
+
+			        <!-- Contact Information -->
+			        <div class="col-md-4">
+			            <label class="form-label"><i class="fas fa-phone me-2"></i>Contact Number <span class="required">*</span></label>
+			            <div class="input-group">
+			                <input type="tel" id="contactNumber" class="form-control ps-4" 
+			                       pattern="[0-9]{10}" required>
+			            </div>
+			        </div>
+			        
+			        <div class="col-md-4">
+			            <label class="form-label"><i class="fas fa-envelope me-2"></i>Email ID <span class="required">*</span></label>
+			            <div class="input-group">
+			                <input type="email" id="emailId" class="form-control ps-4" required>
+			            </div>
+			        </div>
+
+			        <!-- Additional Details -->
+			        <div class="col-md-4">
+			            <label class="form-label"><i class="fas fa-venus-mars me-2"></i>Gender <span class="required">*</span></label>
+			            <select id="gender" class="form-select" required>
+			                <option value="">Select Gender</option>
+			                <option value="MALE">Male</option>
+			                <option value="FEMALE">Female</option>
+			                <option value="OTHER">Other</option>
+			            </select>
+			        </div>
+			        
+			        <div class="col-md-4">
+			            <label class="form-label"><i class="fas fa-map-marker-alt me-2"></i>Location <span class="required">*</span></label>
+			            <input type="text" id="location" class="form-control" required>
+			        </div>
+
+			        <!-- Financial & Experience -->
+			        <div class="col-md-4">
+			            <label class="form-label"><i class="fas fa-money-bill me-2"></i>Consultation Fees (INR) <span class="required">*</span></label>
+			            <div class="input-group">
+			                <input type="number" id="consultationFees" class="form-control ps-4" min="0" required>
+			            </div>
+			        </div>
+			        
+			        <div class="col-md-4">
+			            <label class="form-label"><i class="fas fa-calendar me-2"></i>Date of Joining <span class="required">*</span></label>
+			            <input type="date" id="dateOfJoining" class="form-control" required>
+			        </div>
+
+			        <!-- Professional Status -->
+			        <div class="col-md-4">
+			            <label class="form-label"><i class="fas fa-user-md me-2"></i>Surgeon <span class="required">*</span></label>
+			            <select id="isSurgeon" class="form-select" required>
+			                <option value="true">Yes</option>
+			                <option value="false">No</option>
+			            </select>
+			        </div>
+			        
+			        <div class="col-md-4">
+			            <label class="form-label"><i class="fas fa-briefcase me-2"></i>Years of Experience <span class="required">*</span></label>
+			            <input type="number" id="yearsOfExperience" class="form-control" min="0" required>
+			        </div>
+
+			        <!-- Availability Slots -->
+					
+					<div class="col-md-4">
+					    <div class="form-group">
+					        <label class="form-label"><i class="fas fa-clock me-2"></i>Available Slots</label>
+							<button type="button" class="btn btn-link mt-2" onclick="addSlot()">Add Slot</button>
+					        <div id="slotsContainer" class="available-slots-container">
+					            <!-- Slots will be dynamically added here -->
+					        </div>
+					    </div>
+					</div>
+
+
+			        <!-- Status Section -->
+			        <div class="col-md-4">
+			            <div class="form-group">
+			                <label class="form-label"><i class="fas fa-toggle-on me-2"></i>Status <span class="required">*</span></label>
+			                <select id="status" class="form-select" required>
+			                    <option value="true">Active</option>
+								<option value="false">Inactive</option>
+			                </select>
+			            </div>
+			        </div>
+					        <!-- Submit Button -->
+							<div class="col-12 text-center mt-4">
+								  <button type="button" onclick="updateDoctor(event)" class="btn btn-primary px-5 py-2">Update
+								 </button>
+							</div>
+					<!-- Status Messages -->
+					<div id="updateStatusMessage" class="status-message mt-4"></div>
+			    </form>
+    </div>
+</div>
+    <script>
+        // Fetch doctor details
+        async function fetchDoctorDetails() {
+            const doctorId = document.getElementById('doctorIdInput').value;
+            const statusMessage = document.getElementById('statusMessage');
+            
+            if (!doctorId) {
+                showMessage('Please enter a valid Doctor ID', 'danger');
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:8080/viewDoctorById/${doctorId}`);
+                if (!response.ok) throw new Error('Doctor not found');
+                
+                const doctor = await response.json();
+                populateForm(doctor);
+                showForm();
+            } catch (error) {
+                showMessage(error.message, 'danger');
+            }
+        }
+
+        // Populate form fields
+        function populateForm(doctor) {
+            document.getElementById('doctorId').value = doctor.doctorId;
+            document.getElementById('firstName').value = doctor.doctorName.firstName;
+            document.getElementById('lastName').value = doctor.doctorName.lastName;
+            document.getElementById('specialization').value = doctor.specialization;
+			document.getElementById('qualification').value = doctor.qualification;
+            document.getElementById('contactNumber').value = doctor.contactNumber;
+			document.getElementById('emailId').value = doctor.emailId;
+			document.getElementById('gender').value = doctor.gender;
+			document.getElementById('location').value = doctor.location;
+			document.getElementById('consultationFees').value = doctor.consultationFees;
+			document.getElementById('dateOfJoining').value = doctor.dateOfJoining;
+			document.getElementById('isSurgeon').value = doctor.isSurgeon;
+			document.getElementById('yearsOfExperience').value = doctor.yearsOfExperience;
+			document.getElementById('status').value = doctor.status;
+            
+            // Populate slots
+			const slotsContainer = document.getElementById('slotsContainer');
+			    slotsContainer.innerHTML = '';
+
+			    // Populate slots directly with backend format
+			    if (doctor.availableSlots && doctor.availableSlots.length > 0) {
+			        doctor.availableSlots.forEach(slot => {
+			            // Use direct backend format (no conversion needed)
+			            addSlot(slot);
+			        });
+			    } else {
+			        addSlot(); // Add empty slot if none exist
+			    }
+        }
+
+        // Update doctor details
+        async function updateDoctor(event) {
+            event.preventDefault();
+            const statusMessage = document.getElementById('updateStatusMessage');
+            
+            let doctorData = {
+                doctorId: document.getElementById('doctorId').value,
+                doctorName: {
+                    firstName: document.getElementById('firstName').value,
+                    lastName: document.getElementById('lastName').value
+                },
+                specialization: document.getElementById('specialization').value,
+				qualification: document.getElementById('qualification').value,
+				contactNumber: document.getElementById('contactNumber').value,
+				emailId:document.getElementById('emailId').value,
+				gender:	document.getElementById('gender').value,
+				location:document.getElementById('location').value,
+				consultationFees:Number(document.getElementById('consultationFees').value),
+				dateOfJoining:document.getElementById('dateOfJoining').value,
+				isSurgeon: document.getElementById('isSurgeon').value ==='true',
+				yearsOfExperience:Number(document.getElementById('yearsOfExperience').value),
+				availableSlots: Array.from(document.querySelectorAll('[name="availableSlots"]'))
+				                          .map(input => input.value) // Already in correct format
+				                          .filter(value => value.trim() !== ''), // Optional: Remove empty values
+				status:	document.getElementById('status').value === 'true'
+            };
+
+			fetch(`http://localhost:8080/updateDoctor/${doctorData.doctorId}`, {
+			    method: "PUT",
+			    headers: { "Content-Type": "application/json" },
+			    body: JSON.stringify(doctorData)
+			})
+			.then(response => {
+			    // Handle empty response (like 204 No Content)
+			    if (!response.ok) {
+			        return response.json().then(data => {
+			            throw new Error(data.message || `Error ${response.status}`);
+			        });
+			    }
+			    return response.json().then(data => ({
+			        status: response.status,
+			        body: data
+			    }));
+			})
+			.then(result => {
+			    statusMessage.innerHTML = `<p class="text-success text-center">
+			        Doctor ${result.body.doctorName.firstName} updated successfully!
+			    </p>`;
+			})
+			.catch(error => {
+			    // Properly handle errors
+			    statusMessage.innerHTML = `<p class="text-danger text-center">Error: ${error.message}</p>`;
+			    console.error("Fetch error:", error);
+			});
+
+        }
+
+        // Slot management
+		function addSlot(value = '') {
+		            const slotId = Date.now();
+		            const slotHTML = `
+		                <div class="slot-group mb-2" id="slot-${slotId}">
+		                    <div class="input-group">
+		                        <input type="datetime-local" 
+		                               name="availableSlots" 
+		                               value="${value}" 
+		                               class="form-control" 
+		                               required>
+		                        <button type="button" 
+		                                class="btn btn-outline-danger remove-slot" 
+		                                onclick="removeSlot('${slotId}')">
+		                            <i class="fas fa-times"></i>
+		                        </button>
+		                    </div>
+		                </div>
+		            `;
+		            document.getElementById('slotsContainer').insertAdjacentHTML('beforeend', slotHTML);
+		        }
+
+        function removeSlot(slotId) {
+            document.getElementById(`slot-${slotId}`).remove();
+        }
+
+        // UI Helpers
+        function showForm() {
+            document.getElementById('idEntrySection').style.display = 'none';
+            document.getElementById('updateForm').style.display = 'block';
+        }
+
+        function resetForm() {
+            document.getElementById('idEntrySection').style.display = 'block';
+            document.getElementById('updateForm').style.display = 'none';
+            document.getElementById('doctorIdInput').value = '';
+            document.getElementById('statusMessage').innerHTML = '';
+        }
+
+        function showMessage(text, type) {
+            const statusMessage = document.getElementById('statusMessage');
+            statusMessage.innerHTML = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    <i class="fas fa-${type === 'success' ? 'check' : 'exclamation'}-circle me-2"></i>
+                    ${text}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `;
+        }
+		
+		document.addEventListener("DOMContentLoaded", function () {
+		    const urlParams = new URLSearchParams(window.location.search);
+		    const doctorId = urlParams.get("doctorId");
+
+		    if (doctorId) {
+		        // Auto-fill the input field
+		        document.getElementById("doctorIdInput").value = doctorId;
+
+		        // Call fetch and populate form
+		        fetch(`http://localhost:8080/viewDoctorById/${doctorId}`)
+		            .then(response => {
+		                if (!response.ok) throw new Error('Doctor not found');
+		                return response.json();
+		            })
+		            .then(doctor => {
+		                populateForm(doctor);
+		                showForm();
+		            })
+		            .catch(error => {
+		                showMessage(error.message, 'danger');
+		            });
+		    }
+		});
+
+    </script>
+</th:block>

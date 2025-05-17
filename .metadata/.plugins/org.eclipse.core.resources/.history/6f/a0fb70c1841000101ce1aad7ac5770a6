@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment Method Analysis</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body{
+           background-image: url('/images/img6.jpg');
+            background-size: cover ;
+            
+            background-position: center;
+            font-family: 'Arial', sans-serif;
+            color: #fff;
+        }
+        .myContainer{
+           background-color: rgba(0, 0, 0, 0.84);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5 myContainer">
+        <h2>Payment Method Analysis</h2>
+
+        <!-- Form to input Date Range -->
+        <form id="analysisForm">
+            <div class="form-group">
+                <label for="startDate">Start Date:</label>
+                <input type="date" id="startDate" name="startDate" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="endDate">End Date:</label>
+                <input type="date" id="endDate" name="endDate" class="form-control" required>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="fetchPaymentMethodAnalysis()">Generate Report</button>
+        </form>
+
+        <hr>
+
+        <!-- Error Message -->
+        <div id="errorMessage" class="alert alert-danger mt-3 d-none"></div>
+
+        <!-- Charts Section -->
+        <div id="chartsSection" class="mt-4 d-none">
+            <h4>Payment Method Distribution</h4>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <canvas id="pieChart"></canvas>
+                </div>
+                <div class="col-md-6">
+                    <canvas id="lineChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Back to Home -->
+        <div class="mt-3">
+            <a th:href="@{/homePayment}" class="btn btn-secondary">Go to Home</a>
+        </div>
+    </div>
+    
+    <script>
+        function fetchPaymentMethodAnalysis() {
+            let startDate = document.getElementById("startDate").value;
+            let endDate = document.getElementById("endDate").value;
+
+            if (!startDate || !endDate) {
+                $("#errorMessage").text("❌ Please enter both Start and End dates!").removeClass("d-none");
+                return;
+            }
+
+            let apiUrl = `http://localhost:7212/generatePaymentMethodAnalysisReport?startDate=${startDate}&endDate=${endDate}`;
+
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Failed to fetch report data");
+                    }
+                    return response.json();
+                })
+                .then(report => {
+                    let labels = ["Credit Card", "Debit Card", "UPI", "Cash"];
+                    let data = [
+                        report.creditCardCount,
+                        report.debitCardCount,
+                        report.upiCount,
+                        report.cashCount
+                    ];
+
+                    renderCharts(labels, data);
+                    $("#errorMessage").addClass("d-none");
+                    $("#chartsSection").removeClass("d-none");
+                })
+                .catch(error => {
+                    $("#errorMessage").text("❌ Error fetching report. Please try again!").removeClass("d-none");
+                    $("#chartsSection").addClass("d-none");
+                    console.error("❌ Error:", error);
+                });
+        }
+
+        function renderCharts(labels, data) {
+            const colors = ["#FF6384", "#36A2EB", "#FFCE56", "#4CAF50"];
+
+            // Pie Chart
+            const pieCtx = document.getElementById('pieChart').getContext('2d');
+            new Chart(pieCtx, {
+                type: 'pie',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Transactions',
+                        data: data,
+                        backgroundColor: colors
+                    }]
+                }
+            });
+
+            // Line Chart
+            const lineCtx = document.getElementById('lineChart').getContext('2d');
+            new Chart(lineCtx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Number of Transactions',
+                        data: data,
+                        borderColor: '#007bff',
+                        backgroundColor: 'rgba(0, 123, 255, 0.2)',
+                        fill: true
+                    }]
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title>Book Appointment</title>
+	<link rel="stylesheet" href="/css/styleApp.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+	<!-- Flatpickr CSS -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+	<style>
+		/* Global Styles */
+		body {
+			background-image: url('img/addbg.webp');
+			background-size: 20%;
+			font-family: 'Poppins', sans-serif;
+			color: #333;
+			background-color: #F0F0F0;
+			margin: 0;
+			padding: 0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			height: 100vh;
+		}
+
+		.container {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			width: 90vw;
+			max-width: 1200px;
+			height: 80vh;
+			background: rgba(255, 255, 255, 0.15);
+			backdrop-filter: blur(10px);
+			padding: 40px;
+			border-radius: 16px;
+			box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+			border: 1px solid rgba(255, 255, 255, 0.2);
+			margin-top: 80px;
+		}
+
+		.image-container {
+			flex: 1;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+
+		.image-container img {
+			max-width: 100%;
+			height: auto;
+			border-radius: 12px;
+		}
+
+		.form-container {
+			flex: 1;
+			max-width: 450px;
+			padding: 20px;
+		}
+
+		h2 {
+			color: #007BFF;
+			border-bottom: 2px solid #007BFF;
+			padding-bottom: 10px;
+			text-align: center;
+		}
+
+		.form-group {
+			margin-bottom: 15px;
+		}
+
+		.form-label {
+			font-weight: 600;
+			color: #333;
+		}
+
+		.form-control {
+			width: 100%;
+			padding: 12px;
+			border: 1px solid gainsboro;
+			background: rgba(255, 255, 255, 0.2);
+			color: black;
+			border-radius: 8px;
+			font-size: 16px;
+			outline: none;
+			transition: all 0.3s ease-in-out;
+			font-family: 'Roboto', sans-serif;
+		}
+
+		.form-control:focus {
+			border-color: #007BFF;
+			background: rgba(255, 255, 255, 0.3);
+			box-shadow: 0 0 8px rgba(0, 91, 187, 0.5);
+		}
+
+		.btn {
+			background-color: rgba(0, 123, 255, 0.8);
+			color: white;
+			padding: 12px;
+			border: none;
+			border-radius: 8px;
+			font-size: 16px;
+			cursor: pointer;
+			width: 100%;
+			transition: all 0.3s ease-in-out;
+		}
+
+		.btn:hover {
+			background-color: rgba(0, 86, 179, 0.9);
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+		}
+
+		@media (max-width: 1024px) {
+			.container {
+				flex-direction: column;
+				height: auto;
+				width: 90%;
+				padding: 30px;
+
+			}
+
+			.image-container img {
+				max-width: 80%;
+			}
+
+			.form-container {
+				width: 100%;
+			}
+		}
+
+		.header {
+			background: rgba(0, 123, 255, 0.9);
+			color: white;
+			text-align: center;
+			padding: 20px;
+			font-size: 30px;
+			font-weight: bold;
+			position: fixed;
+			top: 0;
+			width: 100%;
+			height: 05%;
+			z-index: 1000;
+			box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+		}
+
+		.flatpickr-input {
+			width: 100%;
+			padding: 12px;
+			border: 1px solid gainsboro;
+			background: rgba(255, 255, 255, 0.2);
+			color: black;
+			border-radius: 8px;
+			font-size: 16px;
+			outline: none;
+			transition: all 0.3s ease-in-out;
+			font-family: 'Roboto', sans-serif;
+		}
+
+		.flatpickr-input:focus {
+			border-color: #007BFF;
+			background: rgba(255, 255, 255, 0.3);
+			box-shadow: 0 0 8px rgba(0, 91, 187, 0.5);
+		}
+
+		.select-dropdown {
+			width: 100%;
+			padding: 12px;
+			border: 1px solid gainsboro;
+			background: rgba(255, 255, 255, 0.2);
+			color: black;
+			border-radius: 8px;
+			font-size: 16px;
+			outline: none;
+			transition: all 0.3s ease-in-out;
+			font-family: 'Roboto', sans-serif;
+			cursor: pointer;
+		}
+
+		.select-dropdown:focus {
+			border-color: #007BFF;
+			background: rgba(255, 255, 255, 0.3);
+			box-shadow: 0 0 8px rgba(0, 91, 187, 0.5);
+		}
+	</style>
+</head>
+
+<body>
+	<div class="header">
+		Book Appointment
+		<a href="/appHome" class="home-icon">
+			<img src="/img/home-icon.png" alt="Home" />
+		</a>
+	</div>
+
+	<div class="container">
+		<div class="image-container">
+			<img th:src="@{/img/icon.jpg}" alt="Doctor Consultation">
+		</div>
+
+		<div class="form-container">
+			<!--<h1>Book Appointment</h1>-->
+			<form id="appointmentForm" th:object="${appointment}" th:action="@{/addAppointment}" method="post">
+				<div class="form-group">
+					<label class="form-label">Patient Id</label>
+					<input type="number" name="patient.patientId" class="form-control" placeholder="Enter patient's ID"
+						required />
+				</div>
+
+				<div class="form-group">
+					<label class="form-label">Doctor Id</label>
+					<input type="number" name="doctor.doctorId" class="form-control" placeholder="Enter doctor's ID"
+						required />
+				</div>
+
+
+				<div class="form-group">
+					<label class="form-label">Date</label>
+					<input id="appointmentDate" th:field="*{appointmentDate}" class="form-control flatpickr-input"
+						placeholder="Select Date" required />
+				</div>
+
+				<div class="form-group">
+					<label class="form-label">Slot</label>
+					<select id="slot" name="slot" class="form-control select-dropdown" required>
+						<option value="09:00 - 10:00 AM">09:00 - 10:00 AM</option>
+						<option value="10:00 - 11:00 AM">10:00 - 11:00 AM</option>
+						<option value="11:00 - 12:00 PM">11:00 - 12:00 PM</option>
+						<option value="01:00 - 02:00 PM">01:00 - 02:00 PM</option>
+						<option value="02:00 - 03:00 PM">02:00 - 03:00 PM</option>
+						<option value="03:00 - 04:00 PM">03:00 - 04:00 PM</option>
+						<option value="04:00 - 05:00 PM">04:00 - 05:00 PM</option>
+						<option value="11:00 - 12:00 AM">11:00 - 12:00 AM</option>
+					</select>
+				</div>
+
+
+				<!--<div class="form-group">
+					<label class="form-label">Start Time</label>
+					<input type="time" th:field="*{appointmentStartTime}" class="form-control" required />
+				</div>
+
+				<div class="form-group">
+					<label class="form-label">End Time</label>
+					<input type="time" th:field="*{appointmentEndTime}" class="form-control" required />
+				</div>-->
+
+				<div class="form-group">
+					<label class="form-label">Reason for Visit</label>
+					<textarea th:field="*{reasonForVisit}" class="form-control" rows="4" placeholder="Enter Reason"
+						required></textarea>
+				</div>
+
+				<button type="submit" class="btn">Book Appointment</button>
+			</form>
+		</div>
+	</div>
+
+	<script>
+	document.addEventListener("DOMContentLoaded", function () {
+	    document.getElementById("appointmentDate").addEventListener("change", function () {
+	        let selectedDate = this.value;
+	        let doctorId = document.querySelector("input[name='doctor.doctorId']").value;
+	        
+	        if (!doctorId) {
+	            alert("Please enter a Doctor ID first.");
+	            return;
+	        }
+
+	        fetch(`/getBookedSlots?doctorId=${doctorId}&date=${selectedDate}`)
+	            .then(response => response.json())
+	            .then(bookedSlots => {
+	                let slotDropdown = document.getElementById("slot");
+	                let allSlots = slotDropdown.querySelectorAll("option");
+
+	                allSlots.forEach(option => {
+	                    option.style.display = bookedSlots.includes(option.value) ? "none" : "block";
+	                });
+
+	                if (bookedSlots.length === allSlots.length) {
+	                    slotDropdown.innerHTML = '<option>No available slots</option>';
+	                }
+	            })
+	            .catch(error => console.error("Error fetching booked slots:", error));
+	    });
+	});
+	</script>
+
+
+	<script>
+		document.getElementById("appointmentForm").addEventListener("submit", function (event) {
+			event.preventDefault();
+
+			const formData = new FormData(this);
+			const jsonObject = {
+				appointmentDate: formData.get("appointmentDate"),
+				slot: formData.get("slot"),
+				reasonForVisit: formData.get("reasonForVisit"),
+				patient: {patientId: parseInt(formData.get("patient.patientId"))},
+				doctor: {doctorId: parseInt(formData.get("doctor.doctorId"))}
+			};
+
+			fetch("http://localhost:8080/addAppointment", {
+				method: "POST",
+				headers: {"Content-Type": "application/json"},
+				body: JSON.stringify(jsonObject)
+			})
+				.then(response => response.json().catch(() => ({success: false, message: "Invalid JSON response"})))
+				.then(data => {
+					if (data.success) {
+						Swal.fire({
+							title: "Success!",
+							text: "Your appointment has been booked.",
+							icon: "success",
+							confirmButtonText: "OK"
+						}).then(() => {
+							window.location.href = "/viewAllAppointment";
+						});
+					} else {
+						Swal.fire({
+							title: "Error!",
+							text: "Error booking appointment: " + data.message,
+							icon: "error",
+							confirmButtonText: "OK"
+						});
+					}
+				})
+				.catch(error => {
+					console.error("Error:", error);
+					Swal.fire({
+						title: "Error!",
+						text: "An error occurred while booking the appointment.",
+						icon: "error",
+						confirmButtonText: "OK"
+					});
+				});
+		});
+
+
+	</script>
+
+	<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+	<script>
+		flatpickr("#appointmentDate", {
+			enableTime: false,
+			dateFormat: "Y-m-d",
+			minDate: "today",
+			altInput: true,
+			altFormat: "F j, Y",
+		});
+	</script>
+</body>
+
+</html>

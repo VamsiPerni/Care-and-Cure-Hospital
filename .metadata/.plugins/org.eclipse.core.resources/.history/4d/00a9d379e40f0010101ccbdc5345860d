@@ -1,0 +1,5 @@
+package com.cac.entity;
+
+public class Bill {
+
+}

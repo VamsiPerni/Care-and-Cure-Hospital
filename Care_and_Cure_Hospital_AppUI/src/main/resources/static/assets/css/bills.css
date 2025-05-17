@@ -1,0 +1,234 @@
+
+        .bill-container {
+            border-radius: 30px;
+            width: 90%;
+            max-width: 1200px;
+            margin: 15% 10% 3% 10%;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: left;
+            color: #0cb7d6;
+            /* Blue header */
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        .filter-section select:hover {
+            background-color: #0cb7d6;
+        }
+
+        .filter-section input {
+            padding: 8px;
+            margin-right: 10px;
+            width: 100%;
+        }
+
+        .filter-section .go-button,
+        .filter-section .home-button {
+            padding: 8px 15px;
+            background-color: #0cb7d6;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            margin-right: 10px;
+            border-radius: 10px;
+        }
+
+        /* Invoice Summary */
+        .invoice-summary {
+            display: flex;
+            justify-content: center;
+            gap: 100px;
+            margin-bottom: 20px;
+            padding: 10px;
+        }
+
+        .total-invoices {
+            border: 2px solid #95d4e4;
+            padding: 20px;
+            text-align: center;
+            border-radius: 20px;
+        }
+
+        .sort-section {
+            align-items: flex-start;
+            display: flex;
+            margin-bottom: 10px;
+            gap: 270px;
+        }
+
+        /* Filter Buttons (ALL, PAID, etc.) */
+        .filter-buttons {
+            text-align: right;
+            margin-top: 30px;
+            gap: 10px;
+        }
+
+        .filter-buttons button {
+            padding: 5px 10px;
+            background-color: #0cb7d6;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 10px;
+        }
+
+        /* Sort By Dropdown */
+        .sort-by {
+            text-align: right;
+            margin-bottom: 10px;
+            width: 50%;
+        }
+
+        .sort-by select {
+            padding: 5px;
+            font-size: 12px;
+        }
+
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #d9d8d8;
+        }
+
+        /* Status Colors */
+        .status-paid {
+            background-color: #c2e0c6;
+            /* Light green */
+            text-align: center;
+            border-radius: 10px;
+        }
+
+        .status-unpaid {
+            background-color: #f4c2c2;
+            /* Light red */
+            text-align: center;
+            border-radius: 10px;
+        }
+
+        /* Action Links */
+        .action-link {
+            color: #0cb7d6;
+            text-decoration: none;
+            text-align: center;
+        }
+
+
+        #invoice-dialog {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        #invoice-dialog .dialog-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 800px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #invoice-dialog .dialog-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #invoice-dialog .dialog-header h2 {
+            color: #333;
+            font-size: 24px;
+            margin: 0;
+        }
+
+        #invoice-dialog .invoice-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        #invoice-dialog .invoice-info div {
+            flex: 1;
+        }
+
+        #invoice-dialog .invoice-info strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        #invoice-dialog table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        #invoice-dialog th,
+        #invoice-dialog td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        #invoice-dialog th {
+            background-color: #f2f2f2;
+        }
+
+        #invoice-dialog .dialog-footer {
+            text-align: right;
+        }
+
+        #invoice-dialog .dialog-footer button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        #invoice-dialog .dialog-footer #generate-email-button {
+            background-color: #0cb7d6;
+            color: white;
+        }
+
+        #invoice-dialog .dialog-footer #close-dialog-button {
+            background-color: #ccc;
+            color: black;
+            margin-left: 10px;
+        }
+
+        #invoice-table th:nth-child(2),
+        #invoice-table td:nth-child(2) {
+            text-align: center;
+        }

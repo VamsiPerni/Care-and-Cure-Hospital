@@ -1,0 +1,143 @@
+<th:block th:fragment="content">
+    <head>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" th:href="@{/css/doctorstyle.css}">
+        <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    </head>
+
+    <style>
+        .doctor-table-container {
+            width: 100%;
+            margin: 50px auto;
+            padding: 20px;
+            background: white;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .doctor-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .doctor-table th, .doctor-table td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .doctor-table th {
+            background: #007bff;
+            color: white;
+        }
+
+        .icon {
+            margin-right: 5px;
+            color: #007bff;
+        }
+
+        .hide {
+            display: none;
+        }
+    </style>
+
+    <div>
+        <h3 class="text-primary text-center">Enter Specialization</h3>
+        <form>
+            <label for="specialization" class="form-label">Specialization:</label>
+            <input type="text" id="specialization" name="specialization" class="form-control mb-2" placeholder="Enter Specialization" required>
+        </form>
+        <div id="error-message" class="alert alert-danger mt-2 hide"></div>
+        <button type="submit" onclick="fetchDoctors()" class="btn btn-primary w-100">Search</button>
+        <div id="doctorTableContainer" class="mt-4"></div>
+    </div>
+
+    <script>
+        function fetchDoctors() {
+            let specialization = document.getElementById("specialization").value;
+            let doctorTableContainer = document.getElementById("doctorTableContainer");
+            let errorMessage = document.getElementById("error-message");
+
+            if (!specialization.trim()) {
+                errorMessage.textContent = "Please enter a specialization.";
+                errorMessage.classList.remove("hide");
+                doctorTableContainer.innerHTML = "";
+                return;
+            }
+
+            fetch(`http://localhost:8080/viewDoctorBySpecialization/${specialization}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`No doctors found for specialization: ${specialization}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    errorMessage.classList.add("hide");
+
+                    if (data.length === 0) {
+                        doctorTableContainer.innerHTML = "<p class='text-danger text-center'>No data found.</p>";
+                        return;
+                    }
+
+                    const getValue = (value) => value ? value : "NA";
+                    const formatBoolean = (value) => value ? "Yes" : "No";
+
+                    let tableHTML = `
+                        <div class="doctor-table-container">
+                            <h4 class="text-primary text-center">
+                                <i class="fas fa-stethoscope"></i> Doctors Specialized in ${specialization}
+                            </h4>
+                            <hr>
+                            <table class="doctor-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Qualification</th>
+                                        <th>Contact</th>
+                                        <th>Email</th>
+                                        <th>Location</th>
+                                        <th>Gender</th>
+                                        <th>Fee</th>
+                                        <th>Experience</th>
+                                        <th>Surgeon</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>`;
+
+                    data.forEach(doctor => {
+                        tableHTML += `
+                            <tr>
+                                <td>${getValue(doctor.doctorId)}</td>
+                                <td>${getValue(doctor.doctorName.firstName)} ${getValue(doctor.doctorName.lastName)}</td>
+                                <td>${getValue(doctor.qualification)}</td>
+                                <td>${getValue(doctor.contactNumber)}</td>
+                                <td>${getValue(doctor.emailId)}</td>
+                                <td>${getValue(doctor.location)}</td>
+                                <td>${getValue(doctor.gender)}</td>
+                                <td>₹${getValue(doctor.consultationFees)}</td>
+                                <td>${getValue(doctor.yearsOfExperience)} years</td>
+                                <td>${formatBoolean(doctor.isSurgeon)}</td>
+                                <td>${formatBoolean(doctor.status)}</td>
+                            </tr>`;
+                    });
+
+                    tableHTML += `
+                                </tbody>
+                            </table>
+                        </div>`;
+
+                    doctorTableContainer.innerHTML = tableHTML;
+                })
+                .catch(error => {
+                    doctorTableContainer.innerHTML = "";
+                    errorMessage.textContent = error.message;
+                    errorMessage.classList.remove("hide");
+                });
+        }
+    </script>
+</th:block>

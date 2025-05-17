@@ -1,0 +1,83 @@
+package com.cac.entity;
+
+import java.time.LocalDateTime;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import java.time.temporal.ChronoUnit;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+@Entity
+public class Payment
+{
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)  // Auto-increment
+	private Integer transactionId;
+	
+	private LocalDateTime transactionDate;
+	@JsonIgnore
+	@ManyToOne
+	@JoinColumn(name = "bill_id")
+	private Bill billObj;
+	private double amountPaid;
+	private String paymentMethod;
+	private String paymentStatus;	
+	
+	
+	public Bill getBillObj() {
+		return billObj;
+	}
+
+	public void setBillObj(Bill billObj) {
+		this.billObj = billObj;
+	}
+
+	@PrePersist
+	public void prePersist() {
+        this.transactionDate = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+    }
+	
+	public int getTransactionId() {
+		return transactionId;
+	}
+	public void setTransactionId(int transactionId) {
+		this.transactionId = transactionId;
+	}
+	public LocalDateTime getTransactionDate() {
+		return transactionDate;
+	}
+//	public void setTransactionDate(LocalDateTime transactionDate) {
+//		this.transactionDate = transactionDate;
+//	}
+	public double getAmountPaid() {
+		return amountPaid;
+	}
+	public void setAmountPaid(double amountPaid) {
+		this.amountPaid = amountPaid;
+	}
+	public String getPaymentMethod() {
+		return paymentMethod;
+	}
+	public void setPaymentMethod(String paymentMethod) {
+		this.paymentMethod = paymentMethod;
+	}
+	public String getPaymentStatus() {
+		return paymentStatus;
+	}
+	public void setPaymentStatus(String paymentStatus) {
+		this.paymentStatus = paymentStatus;
+	}	
+	
+
+	
+}
+
+
+
+
+

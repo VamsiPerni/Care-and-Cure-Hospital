@@ -1,0 +1,346 @@
+package com.cac.controller;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.cac.dto.PaymentMethodAnalysisDTO;
+import com.cac.dto.PaymentSummaryDTO;
+import com.cac.entity.Payment;
+import com.cac.dto.PaymentViewTransactionDTO;
+
+import org.springframework.ui.Model;
+
+
+
+@Controller
+public class PaymentController
+{
+	private final String BASE_URL = "http://localhost:7212";
+
+	@Autowired
+    private RestTemplate restTemplate;
+	
+	@GetMapping("/homePayment")
+	public String homePayment()
+	{
+		return "homePayment";
+	}
+	
+	// Add Transaction starts here 
+	
+	@GetMapping("/addTransactionForm")
+	public String showAddTransactionForm(Model model)
+	{
+		model.addAttribute("payment",new Payment());
+		
+		return "addTransaction";
+	}
+	
+	@PostMapping("/addTransaction")
+	public String addTransaction(@ModelAttribute Payment payment, RedirectAttributes redirectAttributes) {
+	    ResponseEntity<Payment> response = restTemplate.postForEntity(BASE_URL + "/addTransaction", payment, Payment.class);
+
+	    if (response.getBody() != null) {
+	        redirectAttributes.addFlashAttribute("message", "✅ Payment Added Successfully: " + response.getBody().getAmountPaid());
+	    } else {
+	        redirectAttributes.addFlashAttribute("message", "⚠️ Payment added, but no response received.");
+	    }
+
+	    return "redirect:/addTransactionForm"; 
+	}
+	
+	// Update Transaction Starts here 
+	
+	@GetMapping("/updateTransactionForm")
+    public String showUpdateTransactionPage() {
+        return "updateTransaction";  
+    }
+	
+	// Fetch transaction by ID for updating
+	@GetMapping("/fetchTransactionForUpdate")
+	public String fetchTransactionForUpdate(@RequestParam("transactionId") int transactionId, Model model) {
+	    try {
+	        ResponseEntity<PaymentViewTransactionDTO> response = restTemplate.getForEntity(
+	            BASE_URL + "/viewTransactionById/" + transactionId, 
+	            PaymentViewTransactionDTO.class
+	        );
+
+	        if (response.getBody() != null) {
+	            model.addAttribute("transaction", response.getBody());
+	        } else {
+	            model.addAttribute("error", "⚠️ Transaction not found for ID: " + transactionId);
+	        }
+	    } catch (Exception e) {
+	        model.addAttribute("error", "❌ Error fetching transaction.");
+	        e.printStackTrace();
+	    }
+	    return "updateTransaction";
+	}
+	
+	// Update transaction details
+	
+	@PutMapping("/updateTransaction/{transactionId}")
+	public String updateTransaction(@PathVariable int transactionId,
+	                                @RequestBody Payment updatedTransaction,
+	                                RedirectAttributes redirectAttributes) {
+	    try {
+	        // Send the updated transaction data in the PUT request
+	        String updateUrl = BASE_URL + "/updateTransaction" + transactionId;
+	        restTemplate.put(updateUrl, updatedTransaction); // Pass the updated object as the request body
+
+	        redirectAttributes.addFlashAttribute("message", "✅ Transaction updated successfully!");
+	    } catch (Exception e) {
+	        redirectAttributes.addFlashAttribute("error", "❌ Transaction update failed!");
+	        e.printStackTrace();
+	    }
+	    return "redirect:/updateTransactionForm";
+	}
+
+	// viewAllTransactions Starts here
+	
+	@GetMapping("/viewAllTransactions")
+	public String viewAllTransactions(Model model) {
+	    try {
+	        ResponseEntity<PaymentViewTransactionDTO[]> response = restTemplate.getForEntity(
+	            BASE_URL + "/viewAllTransactions", 
+	            PaymentViewTransactionDTO[].class
+	        );
+
+	        if (response.getBody() != null) {
+	            List<PaymentViewTransactionDTO> transactions = Arrays.asList(response.getBody());
+	            model.addAttribute("transactions", transactions);
+	        } else {
+	            model.addAttribute("error", "⚠️ No transactions found.");
+	        }
+	    } catch (Exception e) {
+	        model.addAttribute("error", "❌ Error fetching transactions.");
+	        e.printStackTrace();
+	    }
+	    return "viewAllTransactions"; 
+	}
+	
+	// viewTransactionById starts here
+	
+	@GetMapping("/viewTransaction")
+    public String showViewTransactionPage() {
+        return "viewTransaction";  
+    }
+	
+	@GetMapping("/viewTransactionById")
+	public String viewTransactionById(@RequestParam("transactionId") int transactionId, Model model) {
+	    try {
+	        ResponseEntity<PaymentViewTransactionDTO> response = restTemplate.getForEntity(BASE_URL + "/viewTransactionById/" + transactionId, PaymentViewTransactionDTO.class);
+	        
+	        if (response.getBody() != null)
+	        {
+	        	 PaymentViewTransactionDTO transaction = response.getBody();
+	        	 
+	             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	             String formattedDate = transaction.getTransactionDate().format(formatter);
+	             
+	             model.addAttribute("transaction", transaction);
+	             model.addAttribute("formattedDate", formattedDate);
+	             
+	        } else {
+	            model.addAttribute("error", "⚠️ Transaction not found for ID: " + transactionId);
+	        }
+	    } catch (Exception e) {
+	        model.addAttribute("error", "❌ Error fetching transaction. Please check logs.");
+	        e.printStackTrace();
+	    }
+	    return "viewTransaction"; 
+	}
+	
+	// viewTransactionByMode starts here
+	
+	@GetMapping("/viewTransactionByModeForm")
+	public String showViewTransactionById()
+	{
+		return "viewTransactionByMode";
+	}
+	
+	@GetMapping("/viewTransactionByMode")
+	public String viewTransactionByMode(@RequestParam(value = "paymentMethod", required = false) String paymentMethod, Model model) {
+	    if (paymentMethod != null && !paymentMethod.isEmpty()) {
+	        try {
+	        	ResponseEntity<PaymentViewTransactionDTO[]> response = restTemplate.getForEntity(BASE_URL + "/viewTransactionsByMode?paymentMethod=" + paymentMethod, PaymentViewTransactionDTO[].class);
+
+	            if (response.getBody() != null) {
+	                List<PaymentViewTransactionDTO> transactions = Arrays.asList(response.getBody());
+
+	                if (!transactions.isEmpty()) {
+	                    model.addAttribute("transactions", transactions);
+	                } else {
+	                    model.addAttribute("error", "⚠️ No transactions found for the selected payment method.");
+	                }
+	            } else {
+	                model.addAttribute("error", "⚠️ No response received from backend.");
+	            }
+	        } catch (Exception e) {
+	            model.addAttribute("error", "❌ Error fetching transactions. Please check logs.");
+	            e.printStackTrace();
+	        }
+	    } else {
+	        model.addAttribute("error", "⚠️ Please select a payment method.");
+	    }
+	    return "viewTransactionByMode";
+	    
+	}
+	
+	
+	// deleteTransaction starts from here
+	
+	@GetMapping("/deleteTransactionForm")
+    public String showDeleteTransactionForm(Model model) {
+        return "deleteTransaction";  
+    }
+	
+	
+	// viewTransactionByStatus
+	
+	@GetMapping("/viewTransactionsByStatusForm")
+    public String showViewTransactionsByStatusPage(Model model) {
+        return "viewTransactionByStatus"; 
+    }
+	
+	
+	@GetMapping("/viewTransactionByDateForm")
+	public String showViewTransactionsByDatePage(Model model) {
+	    return "viewTransactionByDate"; 
+	}
+	
+	
+	@GetMapping("/dailyPaymentSummaryForm")
+    public String showDailyPaymentSummaryForm() {
+        return "dailyPaymentSummary";  
+    }
+
+    // Method to fetch daily payment summary from backend and display it on the page
+	
+	@GetMapping("/dailyPaymentSummary")
+    public String fetchDailyPaymentSummary(String date, Model model) {
+        try {
+            // If no date is provided, use today's date
+            if (date == null || date.isEmpty()) {
+                date = LocalDate.now().toString();
+            }
+
+          
+            String apiUrl = BASE_URL + "/dailyPaymentSummary?date=" + date;
+            ResponseEntity<PaymentSummaryDTO> response = restTemplate.getForEntity(apiUrl, PaymentSummaryDTO.class);
+
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                model.addAttribute("summary", response.getBody());
+            } else {
+                model.addAttribute("error", "⚠️ No data available for the selected date.");
+            }
+        } catch (Exception e) {
+            model.addAttribute("error", "❌ Error fetching payment summary: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return "dailyPaymentSummary"; 
+    }
+	
+	
+	@GetMapping("/paymentMethodAnalysisForm")
+	public String showPaymentMethodAnalysisForm() {
+	    return "paymentMethodAnalysisReport"; 
+	}
+
+	@GetMapping("/generatePaymentMethodAnalysisReport")
+	public String generatePaymentMethodAnalysisReport(@RequestParam("startDate") String startDate,
+	                                                  @RequestParam("endDate") String endDate,
+	                                                  Model model) {
+	    try {
+	        
+	        String apiUrl = BASE_URL + "/generatePaymentMethodAnalysisReport?startDate=" + startDate + "&endDate=" + endDate;
+	        System.out.println("API URL: " + apiUrl);  
+	        
+	        ResponseEntity<PaymentMethodAnalysisDTO> response = restTemplate.getForEntity(apiUrl, PaymentMethodAnalysisDTO.class);
+
+	        if (response.getBody() != null) {
+	            model.addAttribute("report", response.getBody());
+	        } else {
+	            model.addAttribute("error", "⚠️ No data available for the selected date range.");
+	        }
+	    } catch (Exception e) {
+	        model.addAttribute("error", "❌ Error fetching payment method analysis report: " + e.getMessage());
+	        e.printStackTrace();  
+	    }
+
+	    return "paymentMethodAnalysisReport";
+	}
+	
+	
+	@GetMapping("/generatePaymentHistoryReportForm")
+	public String showGeneratePaymentHistoruyReportForm() {
+	    return "paymentHistoryReport"; 
+	}
+	
+	
+	
+	@GetMapping("/generatePaymentHistoryReport")
+    public String generatePaymentHistoryReport(
+            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            Model model) {
+        try {
+            
+            String apiUrl = BASE_URL + "/generatePaymentHistoryReport?startDate=" + startDate + "&endDate=" + endDate;
+            System.out.println("API URL: " + apiUrl);  
+
+
+            ResponseEntity<List<Payment>> response = restTemplate.exchange(
+                    apiUrl, HttpMethod.GET, null, new ParameterizedTypeReference<List<Payment>>() {}
+            );
+
+
+            List<Payment> transactions = response.getBody();
+            if (transactions != null && !transactions.isEmpty()) {
+                model.addAttribute("transactions", transactions);
+            } else {
+                model.addAttribute("error", "⚠️ No payment history found for the selected date range.");
+            }
+        } catch (Exception e) {
+            model.addAttribute("error", "❌ Error fetching payment history report: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return "paymentHistoryReport"; 
+    }
+	
+	
+	@GetMapping("/razorpayPaymentForm")
+	public String showRazorpayPaymentPage(){
+		
+	    return "razorpayPayment"; 
+	}
+	
+
+	
+
+
+	
+}

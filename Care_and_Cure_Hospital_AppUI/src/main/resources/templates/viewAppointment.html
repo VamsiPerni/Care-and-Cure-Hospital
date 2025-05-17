@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title>Appointment Details</title>
+	<link rel="stylesheet" href="/css/styleApp.css">
+	<style>
+		body {
+			background-image: url('img/addbg.webp');
+			background-size: 20%;
+			font-family: 'Poppins', sans-serif;
+			color: #333;
+			background-color: #F0F0F0;
+			margin: 0;
+			padding: 0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			height: 100vh;
+		}
+
+		.header {
+			background: rgba(0, 123, 255, 0.9);
+			color: white;
+			text-align: center;
+			padding: 20px;
+			font-size: 30px;
+			font-weight: bold;
+			position: fixed;
+			top: 0;
+			width: 100%;
+			height: 05%;
+			z-index: 1000;
+			box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+		}
+
+		h2 {
+			color: #007BFF;
+			border-bottom: 2px solid #007BFF;
+			padding-bottom: 10px;
+			text-align: center;
+		}
+	</style>
+
+</head>
+
+<body>
+
+	<div class="header">
+		View Appointment
+		<a href="/appHome" class="home-icon">
+			<img src="/img/home-icon.png" alt="Home" />
+		</a>
+	</div>
+
+	<div class="appointment-container">
+		<div class="appointment-box">
+			<h2>Appointment Details</h2>
+
+			<div th:if="${appointment != null}">
+				<p><strong>ID:</strong> <span th:text="${appointment.appointmentId}"></span></p>
+				<p><strong>Patient Name:</strong> <span th:text="${appointment.patient.patientName}"></span></p>
+				<p><strong>Doctor Name:</strong> Dr.<span th:text="${appointment.doctor.doctorName.firstName}"></span> <span th:text="${appointment.doctor.doctorName.lastName}"></span></p>
+				<p><strong>Date:</strong> <span th:text="${appointment.appointmentDate}"></span></p>
+				<p><strong>Slot:</strong> <span th:text="${appointment.slot}"></span></p>
+				<p><strong>Reason:</strong> <span th:text="${appointment.reasonForVisit}"></span></p>
+				<p><strong>Appointment status:</strong> <span th:text="${appointment.status}"></span></p>
+			</div>
+
+			<div th:if="${appointment == null}">
+				<p>Appointment not found.</p>
+			</div>
+		</div>
+	</div>
+
+	<a href="/appHome" class="home-icon">
+		<img src="/img/home-icon.png" alt="Home" />
+	</a>
+</body>
+
+</html>

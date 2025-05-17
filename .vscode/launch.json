@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-CareAndCureHospitalAppApplication<Care_and_Cure_Hospital_App>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.cac.main.CareAndCureHospitalAppApplication",
+            "projectName": "Care_and_Cure_Hospital_App",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        },
+        {
+            "type": "java",
+            "name": "Spring Boot-CareAndCureHospitalAppUiApplication<Care_and_Cure_Hospital_AppUI>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "com.cac.main.CareAndCureHospitalAppUiApplication",
+            "projectName": "Care_and_Cure_Hospital_AppUI",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

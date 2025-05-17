@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment History Report</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Payment History Report</h2>
+
+        <!-- Form to input the date range for the report -->
+        <form id="generateReportForm">
+            <div class="form-group">
+                <label for="startDate">Start Date:</label>
+                <input type="date" id="startDate" name="startDate" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="endDate">End Date:</label>
+                <input type="date" id="endDate" name="endDate" class="form-control" required>
+            </div>
+
+            <!-- Button Group for Proper Alignment -->
+            <div class="d-flex" style="gap: 15px;">
+    <button type="submit" class="btn btn-primary">Generate Report</button>
+    <a href="/homePayment" class="btn btn-secondary">Go to Home</a>
+</div>
+
+        </form>
+
+        <!-- Display error message if no transactions are found or if an error occurs -->
+        <div id="errorMessage" class="alert alert-danger mt-3" style="display:none;"></div>
+
+        <!-- Table to display the transactions -->
+        <table id="transactionsTable" class="table table-striped mt-5" style="display:none;">
+            <thead>
+                <tr>
+                    <th>Transaction ID</th>
+                    <th>Payment Method</th>
+                    <th>Amount Paid</th>
+                    <th>Transaction Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data rows will be dynamically added here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // Handle the form submission
+        document.getElementById('generateReportForm').addEventListener('submit', function(e) {
+            e.preventDefault(); // Prevent the default form submission
+
+            const startDate = document.getElementById('startDate').value; // Already in yyyy-MM-dd format
+            const endDate = document.getElementById('endDate').value; // Already in yyyy-MM-dd format
+
+            // Build the API URL with the correct date format
+            const apiUrl = `http://localhost:7212/generatePaymentHistoryReport?startDate=${startDate}&endDate=${endDate}`;
+
+            // Fetch the data from the backend
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    console.log("API Response:", data); // Log the response from backend
+                    
+                    // Check if data is a valid array with transactions
+                    if (Array.isArray(data) && data.length > 0) {
+                        const transactionsTableBody = document.querySelector('#transactionsTable tbody');
+                        transactionsTableBody.innerHTML = ''; // Clear existing rows
+
+                        data.forEach(transaction => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${transaction.transactionId}</td>
+                                <td>${transaction.paymentMethod}</td>
+                                <td>${transaction.amountPaid}</td>
+                                <td>${transaction.transactionDate}</td>
+                                <td>${transaction.paymentStatus}</td>
+                            `;
+                            transactionsTableBody.appendChild(row);
+                        });
+
+                        document.getElementById('transactionsTable').style.display = 'table'; // Show the table
+                        document.getElementById('errorMessage').style.display = 'none'; // Hide any previous errors
+                    } else {
+                        throw new Error("⚠️ No payment history found for the selected date range.");
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('transactionsTable').style.display = 'none'; // Hide the table
+                    document.getElementById('errorMessage').style.display = 'block';
+                    document.getElementById('errorMessage').textContent = "❌ Error: " + error.message;
+                });
+        });
+    </script>
+    
+</body>
+</html>

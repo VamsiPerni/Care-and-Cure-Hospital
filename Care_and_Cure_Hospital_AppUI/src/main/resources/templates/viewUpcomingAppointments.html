@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>View Upcoming Appointments</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	<link rel="stylesheet" href="/css/styles.css">
+    <style>
+		
+        body {
+            background: url('/img/img.jpg') no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+            width: 40%;
+        }
+        h2 {
+            color: #0056b3;
+            font-weight: bold;
+        }
+        .form-group label {
+            font-weight: bold;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+            width: 100%;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+        .btn-primary:hover {
+            background-color: #004494;
+        }
+        .btn-secondary {
+            margin-top: 10px;
+            width: 100%;
+            background-color: #6c757d;
+            transition: 0.3s;
+        }
+        .btn-secondary:hover {
+            background-color: #545b62;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>View Upcoming Appointments</h2>
+        
+        <!-- Patient Section -->
+        <form th:action="@{/viewUpcomingAppointmentsByPatient}" method="get">
+            <div class="form-group">
+                <label for="patientId">Enter Patient ID:</label>
+                <input type="text" id="patientId" name="patientId" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Search by Patient</button>
+        </form>
+
+        <hr>
+
+        <!-- Doctor Section -->
+        <form th:action="@{/viewUpcomingAppointmentsByDoctor}" method="get">
+            <div class="form-group">
+                <label for="doctorId">Enter Doctor ID:</label>
+                <input type="text" id="doctorId" name="doctorId" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Search by Doctor</button>
+        </form>
+
+        <a th:href="@{/appHome}" class="btn btn-secondary">Return to Home</a>
+    </div>
+</body>
+</html>

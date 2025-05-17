@@ -1,0 +1,837 @@
+<th:block th:fragment="doctor-dashboard">
+ <head>
+    <title>Doctor Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+	<link rel="stylesheet" th:href="@{/css/doctorstyle.css}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+    <style>
+		/* Dashboard Cards Styling */
+		.dashboard-card {
+		    background: #fff;
+		    border-radius: 10px;
+		    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+		    padding: 1.5rem;
+		    margin-bottom: 1.5rem;
+		    transition: transform 0.3s ease, box-shadow 0.3s ease;
+		}
+		
+
+		.dashboard-card:hover {
+		    transform: translateY(-3px);
+		    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+		}
+
+		.dashboard-card h4 {
+		    color: #000 !important;
+		    font-weight: 600;
+		    margin-bottom: 1.5rem;
+		    font-size: 1.25rem;
+		}
+		.table th{
+			color: white;
+			background-color: #007bff;
+		}
+
+		.dashboard-card h4 i {
+		    color: var(--bs-primary) !important;
+		    font-size: 1.1em;
+		    transition: transform 0.3s ease;
+		}
+
+		.dashboard-card h4:hover i {
+		    transform: rotate(-5deg);
+		}
+
+		/* Table Styling */
+		.dashboard-card .table {
+		    margin-bottom: 0;
+		    border-radius: 8px;
+		    overflow: hidden;
+		}
+
+		.dashboard-card .table thead {
+		    background-color: var(--bs-primary);
+		    color: white;
+		}
+
+		.dashboard-card .table thead th {
+		    border-bottom: none;
+		    padding: 12px 15px;
+		    font-weight: 500;
+		}
+
+		.dashboard-card .table tbody td {
+		    padding: 12px 15px;
+		    vertical-align: middle;
+		    border-color: #f0f0f0;
+		}
+
+		.dashboard-card .table tbody tr:nth-child(even) {
+		    background-color: #f9f9f9;
+		}
+
+		.dashboard-card .table tbody tr:hover {
+		    background-color: #f1f5ff;
+		}
+
+		/* Status Badges - Add appropriate classes to your status elements */
+		.status-badge {
+		    padding: 4px 8px;
+		    border-radius: 20px;
+		    font-size: 0.8rem;
+		    font-weight: 500;
+		}
+
+		.status-confirmed {
+		    background: #d1e7dd;
+		    color: #0f5132;
+		}
+
+		.status-pending {
+		    background: #fff3cd;
+		    color: #856404;
+		}
+        .dashboard-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .stat-icon {
+            font-size: 2.5rem;
+            color: #007bff;
+        }
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+		.card-stats {
+		     border-radius: 10px;
+		     box-shadow: 0 0 10px rgba(0,0,0,0.1);
+		     transition: transform 0.3s;
+		}
+		.card-stats:hover {
+		     transform: translateY(-5px);
+		}
+		.icon-container {
+		     width: 60px;
+		     height: 60px;
+		     border-radius: 50%;
+		     display: flex;
+		     align-items: center;
+		     justify-content: center;
+		     margin-right: 15px;
+		}
+		.bg-green-light {
+		     background-color: rgba(13, 253, 17, 0.2);
+		}
+		.bg-info-light {
+		    background-color: rgba(13, 252, 240, 0.2);
+		}
+		 .bg-warning-light {
+		    background-color: rgba(255, 193, 7, 0.2);
+		}
+		.no-appointments {
+		    opacity: 0.7;
+		    padding: 2rem !important;
+		}
+
+		.no-appointments i {
+		    font-size: 1.5rem;
+		    margin-bottom: 0.5rem;
+		}
+      
+		.status-cancelled {
+		    background: #f8d7da;
+		    color: #842029;
+		}
+		
+		    /* Add these styles */
+		    .appointments-table-container {
+		        max-height: 320px; /* Shows ~5 rows (adjust based on your row height) */
+		        overflow-y: auto;
+		        display: block;
+		    }
+
+		    .table-responsive {
+		        min-height: 320px; /* Minimum height for 3 rows (3 * row height) */
+		    }
+
+		    /* Keep header fixed while scrolling */
+		    .table thead {
+		        position: sticky;
+				width:100%;
+		        top: 0;
+		        z-index: 1;
+		        background-color: #007bff !important;
+		    }
+
+		    /* Better scrollbar styling */
+		    .table-responsive::-webkit-scrollbar {
+		        width: 8px;
+		        height: 8px;
+		    }
+
+		    .table-responsive::-webkit-scrollbar-thumb {
+		        background: #c1c1c1;
+		        border-radius: 4px;
+		    }
+
+		    .table-responsive::-webkit-scrollbar-thumb:hover {
+		        background: #a8a8a8;
+		    }
+			
+			.navbar {
+			       background: linear-gradient(45deg, #3b82f6, #9333ea);
+			       padding: 15px;
+			       border-radius: 10px;
+			   }
+			   
+		</style>
+    </style>
+    <!-- Navigation -->
+<div class="content-container">
+	<nav class="navbar navbar-expand-lg navbar-light shadow-sm py-3 mb-4">
+	    <div class="container-fluid justify-content-between px-4">
+	        <!-- Brand -->
+	        <a class="navbar-brand d-flex align-items-center fw-bold text-light fs-4" href="#">
+	            <i class="fas fa-solid fa-stethoscope me-2"></i>Doctor Dashboard
+	        </a>
+
+	        <!-- Right side: Profile dropdown -->
+	        <div class="dropdown">
+	            <button class="btn btn-outline-light border-0 rounded-circle shadow-sm d-flex align-items-center justify-content-center"
+	                    type="button"
+	                    data-bs-toggle="dropdown"
+	                    aria-expanded="false"
+	                    style="width: 50px; height: 50px; background-color: #f1f3f5;">
+	                <i class="fa-solid fa-user text-dark fs-5"></i>
+	            </button>
+	            <ul class="dropdown-menu dropdown-menu-end shadow">
+	                <li>
+	                    <a class="dropdown-item d-flex align-items-center" href="#" onclick="viewProfile()">
+	                        <i class="fas fa-eye text-primary me-2"></i>View Profile
+	                    </a>
+	                </li>
+	                <li>
+	                    <a class="dropdown-item d-flex align-items-center" href="#" onclick="updateProfile()">
+	                        <i class="fas fa-edit text-primary me-2"></i>Update Profile
+	                    </a>
+	                </li>
+	                <li><hr class="dropdown-divider"></li>
+	                <li>
+	                    <a class="dropdown-item d-flex align-items-center" href="#" onclick="logout()">
+	                        <i class="fas fa-sign-out-alt text-danger me-2"></i>Logout
+	                    </a>
+	                </li>
+	            </ul>
+	        </div>
+	    </div>
+	</nav>
+
+    <div class="container-fluid">
+        <!-- Stats Cards -->
+		<div class="row g-3 mb-4">
+		    <!-- Welcome Card -->
+		    <div class="col-lg-6">
+		        <div class="card h-100 text-white" style="background: linear-gradient(135deg, #3b82f6, #6366f1); border: none; box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.2);">
+		            <div class="card-body position-relative d-flex align-items-center">
+		                <div class="pe-5" style="z-index: 2;">
+		                    <h4 class="mb-2">Hello, Dr.<h3 class="fw-bold mb-2" id="doctorNameTitle"></h3></h4>
+		                    <p class="mb-1 text-light-2" id="doctorSpecializationTitle"></p>
+		                    <p class="mb-3 text-light-2" id="doctorQualificationTitle"></p>
+		                    <div class="text-warning">
+		                        <i class="fas fa-star"></i>
+		                        <i class="fas fa-star"></i>
+		                        <i class="fas fa-star"></i>
+		                        <i class="fas fa-star"></i>
+		                        <i class="fas fa-star"></i>
+		                    </div>
+		                </div>
+		                <img src="/img/docimage.webp" alt="Doctor" 
+		                     class="img-fluid" 
+		                     style="max-height: 220px; position: absolute; right: 20px; top: -20px; z-index: 1; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));">
+		            </div>
+		        </div>
+		    </div>
+
+		    <!-- Stats Cards -->
+		    <div class="col-lg-2 col-md-4 col-sm-6">
+		        <div class="card h-100 border-0" style="background: #f8fafc; box-shadow: 0 5px 15px -5px rgba(0,0,0,0.05);">
+		            <div class="card-body text-center">
+		                <div class="mx-auto mb-3" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; background: rgba(59, 130, 246, 0.1); border-radius: 12px;">
+		                    <i class="fas fa-users fa-lg" style="color: #3b82f6;"></i>
+		                </div>
+		                <h3 class="mb-1 fw-bold" id="totalPatients">0</h3>
+		                <p class="text-muted mb-0" style="font-size: 0.9rem;">Total Patients</p>
+		            </div>
+		        </div>
+		    </div>
+
+		    <div class="col-lg-2 col-md-4 col-sm-6">
+		        <div class="card h-100 border-0" style="background: #f8fafc; box-shadow: 0 5px 15px -5px rgba(0,0,0,0.05);">
+		            <div class="card-body text-center">
+		                <div class="mx-auto mb-3" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; background: rgba(59, 130, 246, 0.1); border-radius: 12px;">
+		                    <i class="fas fa-calendar-day fa-lg" style="color: #3b82f6;"></i>
+		                </div>
+		                <h3 class="mb-1 fw-bold" id="totalAppointments">0</h3>
+		                <p class="text-muted mb-0" style="font-size: 0.9rem;">Total Appointments</p>
+		            </div>
+		        </div>
+		    </div>
+
+		    <div class="col-lg-2 col-md-4 col-sm-6">
+		        <div class="card h-100 border-0" style="background: #f8fafc; box-shadow: 0 5px 15px -5px rgba(0,0,0,0.05);">
+		            <div class="card-body text-center">
+		                <div class="mx-auto mb-3" style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; background: rgba(59, 130, 246, 0.1); border-radius: 12px;">
+		                    <i class="fas fa-rupee-sign fa-lg" style="color: #3b82f6;"></i>
+		                </div>
+		                <h3 class="mb-1 fw-bold" id="totalRevenue">0</h3>
+		                <p class="text-muted mb-0" style="font-size: 0.9rem;">Total Revenue</p>
+		            </div>
+		        </div>
+		    </div>
+		</div>
+
+		<!-- Charts Section -->
+		       <div class="row g-2 mb-2">
+		           <div class="col-md-4">
+		               <div class="dashboard-card">
+		                   <h4><i class="fas fa-venus-mars me-2"></i>Patient Gender Distribution</h4>
+		                   <div class="chart-container">
+		                       <canvas id="genderChart"></canvas>
+		                   </div>
+		               </div>
+		           </div>
+		           <div class="col-md-4">
+		               <div class="dashboard-card">
+		                   <h4><i class="fas fa-chart-line me-2"></i>Appointments Trend</h4>
+		                   <div class="chart-container">
+		                       <canvas id="appointmentsChart"></canvas>
+		                   </div>
+		               </div>
+		           </div>
+		           <div class="col-md-4">
+		               <div class="dashboard-card">
+		                   <h4><i class="fas fa-rupee-sign me-2"></i>Revenue Trend</h4>
+		                   <div class="chart-container">
+		                       <canvas id="revenueChart"></canvas>
+		                   </div>
+		               </div>
+		           </div>
+		       </div>
+		
+
+        <!-- Appointments Section -->
+        <div class="row g-2 mb-2">
+			<!-- Appointments Section -->
+			<div class="row g-2 mb-2">
+			    <div class="col-md-6">
+			        <div class="dashboard-card">
+			            <h4><i class="fas fa-calendar-alt me-2"></i>Upcoming Appointments</h4>
+			            <div class="table-responsive appointments-table-container">
+			                <table class="table table-striped table-hover" id="upcomingAppointments">
+			                    <thead>
+			                        <tr>
+			                            <th>Appointment ID</th>
+			                            <th>Patient Name</th>
+			                            <th>Date</th>
+			                            <th>Slot</th>
+			                            <th>Reason</th>
+			                            <th>Status</th>
+			                        </tr>
+			                    </thead>
+			                    <tbody></tbody>
+			                </table>
+			            </div>
+			        </div>
+			    </div>
+			    <div class="col-md-6">
+			        <div class="dashboard-card">
+			            <h4><i class="fas fa-list-alt me-2"></i>Today's Appointments</h4>
+			            <div class="table-responsive appointments-table-container">
+			                <table class="table table-striped table-hover" id="todayAppointments">
+			                    <thead>
+			                        <tr>
+			                            <th>Appointment ID</th>
+			                            <th>Patient Name</th>
+			                            <th>Date</th>
+			                            <th>Slot</th>
+			                            <th>Reason</th>
+			                            <th>Status</th>
+			                        </tr>
+			                    </thead>
+			                    <tbody></tbody>
+			                </table>
+			            </div>
+			        </div>
+			    </div>
+			</div>
+        </div>
+       
+    </div>
+
+    <!-- Profile Modal -->
+    <div class="modal fade" id="profileModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-primary">Doctor Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="profileContent">
+                    <!-- Profile data will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <script>
+		let doctorId;
+		let appointmentsChart = null;
+		let revenueChart = null;
+		let genderChart = null;
+		    document.addEventListener('DOMContentLoaded', async () => {
+		        const urlParams = new URLSearchParams(window.location.search);
+
+		        // If doctorId is present in the URL (after login), store it in session
+		        if (urlParams.has('doctorId')) {
+		            doctorId = urlParams.get('doctorId');
+		            sessionStorage.setItem('doctorId', doctorId);
+		        } else {
+		            doctorId = sessionStorage.getItem('doctorId');
+		        }
+
+		        // Redirect to login if doctorId is still not set
+		        if (!doctorId) {
+		            window.location.href = '/mainLoginPage';
+		            return;
+		        }
+
+		        try {
+		            await loadAllData();
+		            initializeCharts();
+		        } catch (error) {
+		            console.error('Error initializing dashboard:', error);
+		        }
+		    });
+
+        async function loadAllData() {
+            await Promise.all([
+			    fetchDetails(),
+                fetchTotalPatients(),
+                fetchTotalAppointments(),
+                fetchTotalRevenue(),
+                fetchTodayAppointments(),
+                fetchUpcomingAppointments(),
+                fetchGenderData(),
+                fetchAppointmentsTrend(),
+                fetchRevenueTrend()
+            ]);
+        }
+		
+		async function fetchDetails() {
+		    try {
+		        const response = await fetch(`http://localhost:8080/viewDoctorById/${doctorId}`);
+		        const doctor = await response.json();
+
+		        document.getElementById('doctorNameTitle').innerText = doctor.doctorName.firstName;
+		        document.getElementById('doctorSpecializationTitle').innerText = doctor.specialization;
+		        document.getElementById('doctorQualificationTitle').innerText = doctor.qualification;
+		    } catch (error) {
+		        console.error("Error fetching doctor details:", error);
+		    }
+		}
+
+        // Data Fetching Functions
+        async function fetchTotalPatients() {
+            const res = await fetch(`http://localhost:8080/stats/totalPatients?doctorId=${doctorId}`);
+            const data = await res.json();
+            document.getElementById('totalPatients').textContent = data;
+        }
+
+        async function fetchTotalAppointments() {
+            const res = await fetch(`http://localhost:8080/stats/totalAppointments?doctorId=${doctorId}`);
+            const data = await res.json();
+            document.getElementById('totalAppointments').textContent = data;
+        }
+
+        async function fetchTotalRevenue() {
+            const res = await fetch(`http://localhost:8080/stats/totalRevenue?doctorId=${doctorId}`);
+            const data = await res.json();
+            document.getElementById('totalRevenue').textContent = data || 0;
+        }
+
+		async function fetchTodayAppointments() {
+		    try {
+		        const res = await fetch(`http://localhost:8080/appointments/today?doctorId=${doctorId}`);
+		        const data = await res.json();
+		        const tbody = document.querySelector('#todayAppointments tbody');
+		        
+		        if (data.length === 0) {
+		            tbody.innerHTML = `
+		                <tr>
+		                    <td colspan="6" class="text-center py-4">
+		                        <div class="d-flex flex-column align-items-center">
+		                            <i class="fas fa-calendar-times fs-4 text-muted mb-2"></i>
+		                            <span class="text-muted">No appointments for today</span>
+		                        </div>
+		                    </td>
+		                </tr>
+		            `;
+		        } else {
+		            tbody.innerHTML = data.map(app => `
+		                <tr>
+		                    <td>${app.appointmentId}</td>
+		                    <td>${app.patient.patientName}</td>
+		                    <td>${new Date(app.appointmentDate).toLocaleDateString()}</td>
+		                    <td>${app.slot}</td>
+		                    <td>${app.reasonForVisit}</td>
+		                    <td><span class="status-badge ${getStatusClass(app.status)}">${app.status}</span></td>
+		                </tr>
+		            `).join('');
+		        }
+		    } catch (error) {
+		        console.error('Error fetching appointments:', error);
+		        tbody.innerHTML = `
+		            <tr>
+		                <td colspan="6" class="text-center text-danger py-4">
+		                    Error loading appointments
+		                </td>
+		            </tr>
+		        `;
+		    }
+		}
+
+		// Helper function for status badge classes
+		function getStatusClass(status) {
+		    const statusMap = {
+		        'Confirmed': 'status-confirmed',
+		        'Pending': 'status-pending',
+		        'Cancelled': 'status-cancelled',
+				'Rescheduled':'status-rescheduled',
+				'Scheduled':'status-scheduled'
+		    };
+		    return statusMap[status] || '';
+		}
+
+        async function fetchUpcomingAppointments() {
+            try{
+				const res = await fetch(`http://localhost:8080/appointments/upcoming?doctorId=${doctorId}`);
+                const data = await res.json();
+                const tbody = document.querySelector('#upcomingAppointments tbody');
+			    if (data.length === 0) {
+					            tbody.innerHTML = `
+					                <tr>
+					                    <td colspan="6" class="text-center py-4">
+					                        <div class="d-flex flex-column align-items-center">
+					                            <i class="fas fa-calendar-times fs-4 text-muted mb-2"></i>
+					                            <span class="text-muted">No Upcoming appointments</span>
+					                        </div>
+					                    </td>
+					                </tr>
+					            `;
+					        } else {
+					            tbody.innerHTML = data.map(app => `
+					                <tr>
+					                    <td>${app.appointmentId}</td>
+					                    <td>${app.patient.patientName}</td>
+					                    <td>${new Date(app.appointmentDate).toLocaleDateString()}</td>
+					                    <td>${app.slot}</td>
+					                    <td>${app.reasonForVisit}</td>
+					                    <td><span class="status-badge ${getStatusClass(app.status)}">${app.status}</span></td>
+					                </tr>
+					            `).join('');
+					        }
+					    } catch (error) {
+					        console.error('Error fetching appointments:', error);
+					        tbody.innerHTML = `
+					            <tr>
+					                <td colspan="6" class="text-center text-danger py-4">
+					                    Error loading appointments
+					                </td>
+					            </tr>
+					        `;
+					    }
+					}
+
+					// Helper function for status badge classes
+					function getStatusClass(status) {
+					    const statusMap = {
+					        'Confirmed': 'status-confirmed',
+					        'Pending': 'status-pending',
+					        'Cancelled': 'status-cancelled',
+							'Rescheduled':'status-rescheduled',
+							'Scheduled':'status-scheduled'
+					    };
+					    return statusMap[status] || '';
+					}
+
+					async function fetchGenderData() {
+					    const res = await fetch(`http://localhost:8080/stats/patientGender?doctorId=${doctorId}`);
+					    const data = await res.json();
+					    
+					    const values = Object.values(data);
+					    const isAllZero = values.every(val => val === 0);
+
+					    const container = document.getElementById('genderChart');
+
+					    // If chart exists from previous load, destroy it
+					    if (genderChart) {
+					        genderChart.destroy();
+					        genderChart = null;
+					    }
+
+					    if (isAllZero || values.length === 0) {
+					        // Replace canvas with a message
+					        container.replaceWith(createNoDataMessage('genderChart', 'No gender data available to show'));
+					        return;
+					    } else {
+					        // If previously replaced with a message div, recreate the canvas
+					        if (!(container instanceof HTMLCanvasElement)) {
+					            const newCanvas = document.createElement('canvas');
+					            newCanvas.id = 'genderChart';
+					            container.parentNode.replaceChild(newCanvas, container);
+					        }
+					    }
+
+					    // Re-select canvas (in case we just replaced it)
+					    const canvas = document.getElementById('genderChart');
+
+					    genderChart = new Chart(canvas, {
+					        type: 'doughnut',
+					        data: {
+					            labels: Object.keys(data),
+					            datasets: [{
+					                data: values,
+					                backgroundColor: ['gold', 'red', 'forestgreen'],
+									cutout:'55%'
+					            }]
+					        }
+					    });
+					}
+
+					function createNoDataMessage(originalId, message) {
+					    const div = document.createElement('div');
+					    div.id = originalId;
+					    div.className = 'text-center text-muted mt-5';
+					    div.textContent = message;
+					    return div;
+					}
+
+
+					async function fetchAppointmentsTrend() {
+					    try {
+					        const res = await fetch(`http://localhost:8080/stats/appointmentsByMonth?doctorId=${doctorId}`);
+					        const data = await res.json();
+					        
+					        const allMonths = ['January', 'February', 'March', 'April', 'May', 'June', 
+					                          'July', 'August', 'September', 'October', 'November', 'December'];
+					        const monthMap = new Map(Object.entries(data));
+					        const filledData = allMonths.map(month => monthMap.get(month) || 0);
+
+					        const container = document.getElementById('appointmentsChart');
+					        const isAllZero = filledData.every(v => v === 0);
+
+					        if (appointmentsChart) {
+					            appointmentsChart.destroy();
+					            appointmentsChart = null;
+					        }
+
+					        if (isAllZero || filledData.length === 0) {
+					            container.replaceWith(createNoDataMessage('appointmentsChart', 'No appointment trends data available'));
+					            return;
+					        } else {
+					            if (!(container instanceof HTMLCanvasElement)) {
+					                const newCanvas = document.createElement('canvas');
+					                newCanvas.id = 'appointmentsChart';
+					                container.parentNode.replaceChild(newCanvas, container);
+					            }
+					        }
+
+					        const canvas = document.getElementById('appointmentsChart');
+
+					        appointmentsChart = new Chart(canvas, {
+					            type: 'bar',
+					            data: {
+					                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+					                datasets: [{
+					                    label: 'Monthly Appointments',
+					                    data: filledData,
+					                    backgroundColor: '#007bff',
+					                    borderColor: '#4e73df',
+					                    borderWidth: 1,
+					                    barThickness: 10,
+					                    maxBarThickness: 10
+					                }]
+					            },
+					            options: {
+					                responsive: true,
+					                maintainAspectRatio: false,
+					                scales: {
+					                    x: {
+					                        grid: { display: false },
+					                        ticks: { autoSkip: false, maxRotation: 0, minRotation: 0 }
+					                    },
+					                    y: {
+					                        beginAtZero: true,
+					                        grid: { color: '#f3f4f6' },
+					                        ticks: { precision: 0 }
+					                    }
+					                },
+					                plugins: {
+					                    legend: { display: false },
+					                    tooltip: {
+					                        backgroundColor: '#1e293b',
+					                        titleColor: '#f8fafc',
+					                        bodyColor: '#f8fafc'
+					                    }
+					                }
+					            }
+					        });
+					    } catch (error) {
+					        console.error('Error fetching trends:', error);
+					        const container = document.getElementById('appointmentsChart');
+					        container.replaceWith(createErrorMessage('appointmentsChart', 'Error loading appointment trends'));
+					    }
+					}
+
+					async function fetchRevenueTrend() {
+					    try {
+					        const res = await fetch(`http://localhost:8080/stats/revenueByMonth?doctorId=${doctorId}`);
+					        const data = await res.json();
+					        
+					        const allMonths = ['January', 'February', 'March', 'April', 'May', 'June', 
+					                          'July', 'August', 'September', 'October', 'November', 'December'];
+					        const monthMap = new Map(Object.entries(data));
+					        const filledData = allMonths.map(month => monthMap.get(month) || 0);
+
+					        const container = document.getElementById('revenueChart');
+					        const isAllZero = filledData.every(v => v === 0);
+
+					        if (revenueChart) {
+					            revenueChart.destroy();
+					            revenueChart = null;
+					        }
+
+					        if (isAllZero || filledData.length === 0) {
+					            container.replaceWith(createNoDataMessage('revenueChart', 'No revenue data available to show'));
+					            return;
+					        } else {
+					            if (!(container instanceof HTMLCanvasElement)) {
+					                const newCanvas = document.createElement('canvas');
+					                newCanvas.id = 'revenueChart';
+					                container.parentNode.replaceChild(newCanvas, container);
+					            }
+					        }
+
+					        const canvas = document.getElementById('revenueChart');
+
+					        revenueChart = new Chart(canvas, {
+					            type: 'bar',
+					            data: {
+					                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+					                        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+					                datasets: [{
+					                    label: 'Monthly Revenue',
+					                    data: filledData,
+					                    backgroundColor: 'forestgreen',
+					                    borderColor: '#4e73df',
+					                    borderWidth: 1,
+					                    barThickness: 10,
+					                    maxBarThickness: 10
+					                }]
+					            },
+					            options: {
+					                responsive: true,
+					                maintainAspectRatio: false,
+					                scales: {
+					                    x: {
+					                        grid: { display: false },
+					                        ticks: { autoSkip: false, maxRotation: 0, minRotation: 0 }
+					                    },
+					                    y: {
+					                        beginAtZero: true,
+					                        grid: { color: '#f3f4f6' },
+					                        ticks: {
+					                            callback: (value) => '₹' + value,
+					                            precision: 0,
+					                            autoSkip: true,
+					                            maxTicksLimit: 8
+					                        }
+					                    }
+					                },
+					                plugins: {
+					                    legend: { display: false },
+					                    tooltip: {
+					                        callbacks: {
+					                            label: (context) => 'Revenue: ₹' + context.parsed.y.toLocaleString()
+					                        },
+					                        backgroundColor: '#1e293b',
+					                        titleColor: '#f8fafc',
+					                        bodyColor: '#f8fafc'
+					                    }
+					                }
+					            }
+					        });
+					    } catch (error) {
+					        console.error('Error fetching revenue trends:', error);
+					        const container = document.getElementById('revenueChart');
+					        container.replaceWith(createErrorMessage('revenueChart', 'Error loading revenue trends'));
+					    }
+					}
+
+					function createErrorMessage(originalId, message) {
+					    const div = document.createElement('div');
+					    div.id = originalId;
+					    div.className = 'text-center text-danger mt-5';
+					    div.textContent = message;
+					    return div;
+					}
+
+        // Navigation Functions
+        async function viewProfile() {
+            const res = await fetch(`http://localhost:8080/viewDoctorById/${doctorId}`);
+            const data = await res.json();
+            
+            const profileContent = `
+                <p><strong>Name:</strong> Dr. ${data.doctorName.firstName} ${data.doctorName.lastName}</p>
+                <p><strong>Specialization:</strong> ${data.specialization}</p>
+				<p><strong>Qualification:</strong> ${data.qualification}</p>
+				<p><strong>Contact Number:</strong> ${data.contactNumber}</p>
+                <p><strong>Email:</strong> ${data.emailId}</p>
+				<p><strong>Gender:</strong> ${data.gender}</p>
+                <p><strong>Location:</strong> ${data.location}</p>
+				<p><strong>Consultation Fee:</strong> ${data.consultationFees}</p>
+				<p><strong>Date of Joining:</strong> ${data.dateOfJoining}</p>
+				<p><strong>Surgeon:</strong> ${data.isSurgeon?"Yes":"No"}</p>
+				<p><strong>Experience (years):</strong> ${data.yearsOfExperience}</p>
+				<p><strong>Status:</strong> ${data.status?"Active":"Inactive"}</p>
+            `;
+            
+            document.getElementById('profileContent').innerHTML = profileContent;
+            new bootstrap.Modal(document.getElementById('profileModal')).show();
+        }
+
+        function updateProfile() {
+            window.location.href = `http://localhost:8081/updateDoctor?doctorId=${doctorId}`;
+        }
+
+        function logout() {
+            sessionStorage.removeItem('doctorId');
+            window.location.href = '/mainLoginPage';
+        }
+
+        // Initialize Charts
+        function initializeCharts() {
+            // Charts are initialized during data fetch
+        }
+    </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</th:block>

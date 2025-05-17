@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Doctors</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f0f0; /* Light blue background */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            color: #333;
+        }
+		h2 {
+		    font-family: 'Poppins', serif;
+		    font-size: 32px;
+		    color: #000; /* Light blue heading */
+		    margin-bottom: 20px;
+		}
+
+        /* Container Styling */
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        /* Card Styling */
+        .card {
+            background: white;
+            width: 300px;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            text-align: left;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .card h3 {
+            font-size: 20px;
+            color: #007bff; /* Light blue heading */
+            margin-bottom: 15px;
+        }
+
+        .card p {
+            font-size: 14px;
+            margin: 8px 0;
+        }
+
+        .highlight {
+            font-weight: 600;
+            color: #000; /* Light blue for highlights */
+        }
+		
+		.error {
+		    color: #ff4d4d; /* Red for errors */
+		    font-size: 16px;
+		    margin-bottom: 20px;
+		}
+
+        /* Button Styling */
+        .btn {
+            background: linear-gradient(135deg, #1e90ff, #00bfff); /* Light blue gradient */
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin: 20px auto;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(30, 144, 255, 0.3);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+            }
+
+            .card {
+                width: 100%;
+                max-width: 400px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                padding: 15px;
+            }
+
+            .card h3 {
+                font-size: 22px;
+            }
+
+            .card p {
+                font-size: 13px;
+            }
+
+            .btn {
+                width: 100%;
+                padding: 10px;
+            }
+			/* Error Styling */
+		  }
+		  
+    </style>
+</head>
+<body>
+    <h2>Specialists</h2>
+	<div th:if="${error}" class="error">
+	    <p th:text="${error}"></p>
+	</div>
+    <div class="container">
+        <div th:if="${doctor}" class="card" th:each="doctor : ${doctors}">
+            <h3 th:text="${doctor.doctorName.firstName} + ' ' + ${doctor.doctorName.lastName}"></h3>
+			<p><span class="highlight">Doctor ID:</span> <span th:text="${doctor.doctorId}"></span></p>
+            <p><span class="highlight">Qualification:</span> <span th:text="${doctor.qualification}"></span></p>
+            <p><span class="highlight">Contact:</span> <span th:text="${doctor.contactNumber}"></span></p>
+            <p><span class="highlight">Email:</span> <span th:text="${doctor.emailId}"></span></p>
+            <p><span class="highlight">Gender:</span> <span th:text="${doctor.gender}"></span></p>
+            <p><span class="highlight">Location:</span> <span th:text="${doctor.location}"></span></p>
+            <p><span class="highlight">Consultation Fee:</span> ₹<span th:text="${doctor.consultationFees}"></span></p>
+            <p><span class="highlight">Experience:</span> <span th:text="${doctor.yearsOfExperience}"></span> years</p>
+            <p><span class="highlight">Surgeon:</span> <span th:text="${doctor.isSurgeon} ? 'Yes' : 'No'"></span></p>
+            <p><span class="highlight">Status:</span> <span th:text="${doctor.status} ? 'Active' : 'Inactive'"></span></p>
+        </div>
+    </div>
+	<a href="/viewDoctorBySpecializationForm" class="btn">Search Again</a>
+    <a href="/ui/patients/patientDashboard" class="btn">Home</a>
+</body>
+</html>

@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Transactions by Date</title>
+    
+    <!-- Libraries -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+    <style>
+        :root {
+            --primary: #6c5ce7;
+            --secondary: #a29bfe;
+            --accent: #fd79a8;
+            --dark: #2d3436;
+            --light: #f5f6fa;
+            --success: #00b894;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1e1e2f, #2d2d44);
+            color: var(--light);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .glass-container {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            width: 90%;
+            max-width: 800px;
+            margin: 50px auto;
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 30px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            border-radius: 2px;
+        }
+        
+        .form-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--secondary);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.3);
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(108, 92, 231, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .btn-secondary {
+            background: var(--dark);
+            box-shadow: 0 4px 15px rgba(45, 52, 54, 0.3);
+        }
+        
+        .btn-secondary:hover {
+            box-shadow: 0 8px 25px rgba(45, 52, 54, 0.4);
+        }
+        
+        .alert {
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.4s ease;
+        }
+        
+        .alert.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .alert-danger {
+            background: rgba(214, 48, 49, 0.2);
+            border: 1px solid rgba(214, 48, 49, 0.3);
+            color: #ff7675;
+        }
+        
+        .table-container {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
+        }
+        
+        .table-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            color: var(--light);
+            font-size: 14px;
+        }
+        
+        .table th, .table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .table th {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+        
+        .table td {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .home-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 30px;
+            text-decoration: none;
+            color: var(--secondary);
+            transition: all 0.3s ease;
+        }
+        
+        .home-btn:hover {
+            color: var(--primary);
+            transform: translateX(5px);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .glass-container {
+                padding: 25px;
+                width: 95%;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="glass-container animate__animated animate__fadeIn">
+        <h1 class="page-title">
+            <i class="fas fa-calendar-alt"></i> View Transactions by Date
+        </h1>
+        
+        <!-- Enter Date -->
+        <div class="form-group">
+            <label for="date"><i class="fas fa-calendar-day"></i> Enter Date (YYYY-MM-DD):</label>
+            <input type="date" id="date" class="form-control">
+        </div>
+
+        <div class="mt-3 d-flex justify-content-center gap-2">
+            <button class="btn" onclick="fetchTransactionsByDate()">
+                <i class="fas fa-search"></i> View Transactions
+            </button>
+            <a href="/homePayment" class="btn btn-secondary">
+                <i class="fas fa-tachometer-alt"></i> Go to Dashboard
+            </a>
+        </div>
+
+        <!-- Message -->
+        <div id="message"></div>
+
+        <!-- Display Transactions -->
+        <div class="table-container">
+            <table id="transactionsTable">
+                <thead>
+                    <tr>
+                        <th>Transaction ID</th>
+                        <th>Transaction Date</th>
+                        <th>Amount Paid</th>
+                        <th>Payment Method</th>
+                        <th>Payment Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Rows will be dynamically added here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function fetchTransactionsByDate() {
+            let date = document.getElementById("date").value;
+            const messageDiv = document.getElementById("message");
+            const transactionsTable = document.getElementById("transactionsTable");
+            const tableBody = transactionsTable.getElementsByTagName("tbody")[0];
+            messageDiv.innerHTML = ""; // Clear previous messages
+            tableBody.innerHTML = ""; // Clear previous table rows
+            transactionsTable.style.display = "none"; // Hide table initially
+
+            // Get today's date for comparison
+            const today = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
+
+            if (date > today) {
+                messageDiv.innerHTML = `
+                    <div class="alert alert-danger show">
+                        <i class="fas fa-times-circle"></i> The entered date is in the future. Please provide a valid date.
+                    </div>`;
+                return;
+            }
+
+            // Fetch data from the backend
+            fetch(`http://localhost:8080/viewTransactionsByDate/${date}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Failed to fetch transactions.");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.length > 0) {
+                        transactionsTable.style.display = "table";
+                        data.forEach(transaction => {
+                            let row = tableBody.insertRow();
+                            row.innerHTML = `
+                                <td>${transaction.transactionId}</td>
+                                <td>${transaction.transactionDate}</td>
+                                <td>${transaction.amountPaid}</td>
+                                <td>${transaction.paymentMethod}</td>
+                                <td>${transaction.paymentStatus}</td>
+                            `;
+                        });
+                        messageDiv.innerHTML = `
+                            <div class="alert alert-success show">
+                                <i class="fas fa-check-circle"></i> Transactions successfully fetched!
+                            </div>`;
+                    } else {
+                        messageDiv.innerHTML = `
+                            <div class="alert alert-danger show">
+                                <i class="fas fa-times-circle"></i> Transactions are not available on the provided date.
+                            </div>`;
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    transactionsTable.style.display = "none";
+                    if (date < today) {
+                        messageDiv.innerHTML = `
+                            <div class="alert alert-danger show">
+                                <i class="fas fa-times-circle"></i> No transactions found for the selected date.
+                            </div>`;
+                    } else {
+                        messageDiv.innerHTML = `
+                            <div class="alert alert-danger show">
+                                <i class="fas fa-times-circle"></i> Error fetching transactions. Please try again.
+                            </div>`;
+                    }
+                });
+        }
+    </script>
+</body>
+</html>

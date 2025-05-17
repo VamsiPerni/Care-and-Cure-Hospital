@@ -1,0 +1,21 @@
+package com.cac.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class AdminDashboardUIController {
+
+    @GetMapping("/")
+    public String home() {
+        return "mainHomePage"; // Displays the homepage
+    }
+
+    @GetMapping("/adminDashboard")
+    public String dashboard() {
+        return "adminDashboard"; // Displays the dashboard page
+    }
+
+    
+}
+

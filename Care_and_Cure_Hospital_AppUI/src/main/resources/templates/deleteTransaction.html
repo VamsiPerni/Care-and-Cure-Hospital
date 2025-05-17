@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Delete Transaction</title>
+    <link rel="preload" href="/images/img6.jpg" as="image">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3a0ca3;
+            --accent-color: #f72585;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --success-color: #4cc9f0;
+            --warning-color: #f8961e;
+            --danger-color: #ef233c;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .glass-container {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            width: 95%;
+            max-width: 500px;
+            padding: 40px;
+            transition: all 0.5s ease;
+        }
+
+        .glass-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .report-header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .report-header h2 {
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+            font-size: 2rem;
+        }
+
+        .report-header::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-color), var(--primary-color));
+            margin: 15px auto;
+            border-radius: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+            color: var(--secondary-color);
+        }
+
+        .form-control {
+            height: 50px;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            font-size: 16px;
+            padding-left: 15px;
+            transition: all 0.3s ease;
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(247, 37, 133, 0.25);
+            outline: none;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--danger-color), var(--accent-color));
+            border: none;
+            color: white;
+            padding: 12px 25px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(239, 35, 60, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 200px;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(239, 35, 60, 0.4);
+        }
+
+        .btn-danger:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: white;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 12px 25px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 200px;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(67, 97, 238, 0.1);
+            transform: translateY(-3px);
+        }
+
+        .btn-secondary:active {
+            transform: translateY(0);
+        }
+
+        .alert-message {
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-top: 20px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .alert-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .alert-success {
+            background-color: rgba(76, 201, 240, 0.15);
+            border: 1px solid rgba(76, 201, 240, 0.3);
+            color: var(--success-color);
+        }
+
+        .alert-danger {
+            background-color: rgba(239, 35, 60, 0.15);
+            border: 1px solid rgba(239, 35, 60, 0.3);
+            color: var(--danger-color);
+        }
+
+        .spinner-container {
+            display: none;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 768px) {
+            .glass-container {
+                padding: 25px;
+                margin: 20px auto;
+                border-radius: 15px;
+            }
+
+            .report-header h2 {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate {
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        .delay-1 {
+            animation-delay: 0.1s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.2s;
+        }
+    </style>
+</head>
+<body>
+    <div class="glass-container">
+        <div class="report-header animate">
+            <h2><i class="fas fa-trash-alt"></i> Delete Transaction</h2>
+        </div>
+
+        <!-- Form to enter Transaction ID -->
+        <form id="deleteTransactionForm">
+            <div class="form-group animate delay-1">
+                <label for="transactionId"><i class="fas fa-id-card"></i> Enter Transaction ID:</label>
+                <input type="number" id="transactionId" name="transactionId" class="form-control" required>
+            </div>
+
+            <div class="mt-3 d-flex justify-content-center gap-2 animate delay-2">
+                <button type="button" class="btn btn-danger" onclick="deleteTransaction()">
+                    <i class="fas fa-trash"></i> Delete Transaction
+                </button>
+                <a th:href="@{/homePayment}" class="btn btn-secondary">
+                    <i class="fas fa-home"></i> back to dashboard
+                </a>
+            </div>
+
+            <div id="spinner" class="spinner-container text-center">
+                <div class="spinner-border text-danger" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <p class="mt-2">Deleting transaction...</p>
+            </div>
+        </form>
+
+        <div id="message" class="mt-3"></div>
+    </div>
+
+    <script>
+        function deleteTransaction() {
+            const transactionId = document.getElementById("transactionId").value;
+            const messageDiv = document.getElementById("message");
+            const spinner = document.getElementById("spinner");
+
+            // Clear previous messages
+            messageDiv.innerHTML = "";
+
+            if (!transactionId) {
+                messageDiv.innerHTML = `
+                    <div class='alert-message alert-warning show'>
+                        <i class="fas fa-exclamation-triangle"></i> Please enter a valid Transaction ID.
+                    </div>`;
+                return;
+            }
+
+            // Show loading spinner
+            spinner.style.display = 'block';
+
+            fetch(`http://localhost:8080/deleteTransaction/${transactionId}`, {
+                method: "DELETE",
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.text();
+                } else {
+                    throw new Error(response.status === 404 ?
+                        "Transaction not found" :
+                        "Failed to delete transaction");
+                }
+            })
+            .then(message => {
+                messageDiv.innerHTML = `
+                    <div class='alert-message alert-success show'>
+                        <i class="fas fa-check-circle"></i> ${message}
+                    </div>`;
+                document.getElementById("deleteTransactionForm").reset();
+            })
+            .catch(error => {
+                messageDiv.innerHTML = `
+                    <div class='alert-message alert-danger show'>
+                        <i class="fas fa-times-circle"></i> Error: ${error.message}
+                    </div>`;
+            })
+            .finally(() => {
+                // Hide loading spinner
+                spinner.style.display = 'none';
+            });
+        }
+    </script>
+</body>
+</html>

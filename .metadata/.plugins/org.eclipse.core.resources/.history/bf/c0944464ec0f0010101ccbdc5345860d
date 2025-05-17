@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Transactions by Date</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-size: 16px;
+            color: #555;
+            margin-right: 10px;
+        }
+
+        input[type="date"] {
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-right: 10px;
+            width: 150px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #transactionsTable {
+            margin-top: 20px;
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            display: none;
+        }
+
+        table th, table td {
+            padding: 12px;
+            border: 1px solid #ddd;
+        }
+
+        table th {
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-top: 20px;
+        }
+
+        .success {
+            color: green;
+            font-size: 14px;
+            margin-top: 20px;
+        }
+
+        .table-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>View Transactions by Date</h2>
+
+        <label for="date">Enter Date (YYYY-MM-DD):</label>
+        <input type="date" id="date">
+
+        <button onclick="fetchTransactionsByDate()">View Transactions</button>
+
+        <div id="message"></div>
+
+        <div class="table-container">
+            <table id="transactionsTable">
+                <thead>
+                    <tr>
+                        <th>Transaction ID</th>
+                        <th>Transaction Date</th>
+                        <th>Amount Paid</th>
+                        <th>Payment Method</th>
+                        <th>Payment Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Rows will be dynamically added here -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Go to Home Button -->
+        <div class="mt-3">
+            <a href="/homePayment" class="btn btn-secondary">Go to Home</a>
+        </div>
+    </div>
+
+    <script>
+        function fetchTransactionsByDate() {
+            let date = document.getElementById("date").value;
+            const messageDiv = document.getElementById("message");
+            const transactionsTable = document.getElementById("transactionsTable");
+            const tableBody = transactionsTable.getElementsByTagName("tbody")[0];
+            messageDiv.innerHTML = ""; // Clear previous messages
+            tableBody.innerHTML = ""; // Clear previous table rows
+            transactionsTable.style.display = "none"; // Hide table initially
+
+            // Get today's date for comparison
+            const today = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
+
+            if (date > today) {
+                messageDiv.innerHTML = "<p class='error'>The entered date is in the future. Please provide a valid date.</p>";
+                return;
+            }
+
+            // Fetch data from the backend
+            fetch(`http://localhost:7212/viewTransactionsByDate/${date}`)
+                .then(response => {
+                    if (!response.ok) {
+                        // Handle non-200 responses, e.g., no transactions found
+                        throw new Error("Failed to fetch transactions.");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.length > 0) {
+                        // Show the table and populate with data
+                        transactionsTable.style.display = "table";
+                        data.forEach(transaction => {
+                            let row = tableBody.insertRow();
+                            row.innerHTML = `
+                                <td>${transaction.transactionId}</td>
+                                <td>${transaction.transactionDate}</td>
+                                <td>${transaction.amountPaid}</td>
+                                <td>${transaction.paymentMethod}</td>
+                                <td>${transaction.paymentStatus}</td>
+                            `;
+                        });
+                        messageDiv.innerHTML = "<p class='success'>Transactions successfully fetched!</p>";
+                    } else {
+                        messageDiv.innerHTML = "<p class='error'>Transactions are not available on the provided date.</p>";
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    transactionsTable.style.display = "none";
+                    if (date < today) {
+                        messageDiv.innerHTML = "<p class='error'>No transactions found for the selected date.</p>";
+                    } else {
+                        messageDiv.innerHTML = "<p class='error'>Error fetching transactions. Please try again.</p>";
+                    }
+                });
+        }
+    </script>
+
+</body>
+</html>

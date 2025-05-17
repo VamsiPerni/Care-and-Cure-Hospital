@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Management System</title>
+    <style>
+        body {
+            background-color: #f0f8ff;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            background-color: #0056b3;
+            color: white;
+            width: 250px;
+            height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.1);
+            position: relative; /* Added for logout button positioning */
+        }
+
+        .sidebar h2 {
+            font-size: 22px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid white;
+            padding-bottom: 10px;
+        }
+
+        .sidebar a {
+            color: white;
+            font-size: 16px;
+            padding: 12px 20px;
+            text-decoration: none;
+            width: 100%;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            background-color: transparent;
+            text-align: left;
+            position: relative;
+        }
+
+        .sidebar a::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            height: 1px;
+            background-color: white;
+            opacity: 0.3;
+        }
+
+        .sidebar a:hover {
+            background-color: #007bff;
+            color: white;
+            transform: translateX(5px);
+            transition: all 0.3s ease;
+        }
+
+        .content {
+            flex: 1;
+            padding: 30px;
+            background-color: #f0f8ff;
+        }
+
+        .header {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .container p {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        /* Logout button styles */
+        .logout-btn {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            text-align: center;
+            transition: background-color 0.3s;
+        }
+
+        .logout-btn:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Patient Portal</h2>
+		
+       <!-- <a th:href="@{/ui/patients/addPD}">Register</a>  -->
+        <a th:href="@{/viewDoctorBySpecializationFormPD}">Doctor By Specialization</a>
+        <a th:href="@{/viewAllActiveDoctorsPD}">All Active Doctors</a>
+        <a th:href="@{/viewDoctorAvailabilityBySlotFormPD}">Doctors By Slot Availability</a>
+        <a th:href="@{/viewDoctorAvailabilityByDayFormPD}">Doctors By Day Availability</a>
+        <a th:href="@{/viewDoctorsByConsultationCountFormPD}">Doctors By Consultation Count</a>
+        <a th:href="@{/getDoctorAvailabilityReportFormPD}">Doctor Availability Report</a>
+        <a th:href="@{/razorpayPaymentFormPD}">Make Payment</a>
+        
+        <!-- Logout button at the bottom -->
+        <button class="logout-btn" onclick="window.location.href='/'">Logout</button>
+    </div>
+    <div class="content">
+        <div class="header">Welcome to the Patient Portal of Care and Cure Hospital App</div>
+        <div class="container">
+            <p>Select an option from the left to view the details</p>
+        </div>
+    </div>
+</body>
+</html>

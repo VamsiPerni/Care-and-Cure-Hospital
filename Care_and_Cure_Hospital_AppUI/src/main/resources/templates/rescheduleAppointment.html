@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title>Reschedule Appointment</title>
+	<link rel="stylesheet" href="/css/styleApp.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+	<style>
+		/* Global Styles */
+		body {
+			font-family: 'Poppins', sans-serif;
+			background: url('/img/addbg.webp');
+			background-size: 30%;
+			background-color: #F0F0F0;
+			margin: 0;
+			padding: 0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			height: 100vh;
+			flex-direction: column;
+		}
+
+		.header {
+			background: rgba(0, 123, 255, 0.9);
+			color: white;
+			text-align: center;
+			padding: 20px;
+			font-size: 30px;
+			font-weight: bold;
+			position: fixed;
+			top: 0;
+			width: 100%;
+			height: 05%;
+			z-index: 1000;
+			box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+		}
+
+
+		.appointment-container {
+			background: rgba(255, 255, 255, 0.15);
+			backdrop-filter: blur(10px);
+			padding: 40px;
+			border-radius: 16px;
+			box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+			border: 1px solid rgba(255, 255, 255, 0.2);
+			width: 400px;
+			height: 400px;
+			text-align: center;
+			margin-top: 80px;
+		}
+
+		h2 {
+			color: #007BFF;
+			border-bottom: 2px solid #007BFF;
+			padding-bottom: 1px;
+		}
+
+		.form-group {
+			margin-bottom: 30px;
+			text-align: left;
+		}
+
+		.form-label {
+			font-weight: 600;
+			color: #333;
+			display: block;
+			margin-bottom: 5px;
+		}
+
+		.form-control {
+			width: 100%;
+			padding: 12px;
+			border: 1px solid gainsboro;
+			background: rgba(255, 255, 255, 0.2);
+			color: black;
+			border-radius: 8px;
+			font-size: 16px;
+			outline: none;
+			transition: all 0.3s ease-in-out;
+			font-family: 'Poppins', sans-serif;
+		}
+
+		.form-control:focus {
+			border-color: #007BFF;
+			background: rgba(255, 255, 255, 0.3);
+			box-shadow: 0 0 8px rgba(0, 91, 187, 0.5);
+		}
+
+		.btn {
+			background-color: #007BFF;
+			color: white;
+			padding: 12px;
+			border: none;
+			border-radius: 8px;
+			font-size: 16px;
+			cursor: pointer;
+			width: 90%;
+			transition: all 0.3s ease-in-out;
+		}
+
+		.btn:hover {
+			background-color: #0056b3;
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+		}
+
+
+		@media (max-width: 768px) {
+			.appointment-container {
+				width: 90%;
+				padding: 30px;
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<div class="header">Reschedule Appointment
+		<div class="home-icon">
+			<a href="/appHome">
+				<img src="/img/home-icon.png" alt="Home">
+			</a>
+		</div>
+	</div>
+
+	<div class="appointment-container">
+
+
+		<form th:action="@{/rescheduleAppointment/{id}(id=${appointment.appointmentId})}" method="post"
+			onsubmit="event.preventDefault(); rescheduleAppointment();">
+			<input type="hidden" id="appointmentId" name="appointmentId" th:value="${appointment.appointmentId}">
+
+			<div class="form-group">
+				<label class="form-label" for="appointmentDate">New Appointment Date:</label>
+				<input type="date" id="appointmentDate" name="appointmentDate" class="form-control"
+					th:value="${appointment.appointmentDate}" required>
+			</div>
+
+			<div class="form-group">
+				<label class="form-label" for="slot">New Time Slot:</label>
+				<select id="slot" name="slot" class="form-control" required>
+					<option value="09:00 - 10:00 AM">09:00 - 10:00 AM</option>
+					<option value="10:00 - 11:00 AM">10:00 - 11:00 AM</option>
+					<option value="11:00 - 12:00 PM">11:00 - 12:00 PM</option>
+					<option value="01:00 - 02:00 PM">01:00 - 02:00 PM</option>
+					<option value="02:00 - 03:00 PM">02:00 - 03:00 PM</option>
+					<option value="03:00 - 04:00 PM">03:00 - 04:00 PM</option>
+					<option value="04:00 - 05:00 PM">04:00 - 05:00 PM</option>
+				</select>
+			</div>
+
+			<button type="submit" class="btn">Confirm Reschedule</button>
+		</form>
+	</div>
+
+
+
+	<script>
+		function rescheduleAppointment() {
+			let appointment = {
+				appointmentId: document.getElementById("appointmentId").value,
+				appointmentDate: document.getElementById("appointmentDate").value,
+				slot: document.getElementById("slot").value
+			};
+
+			fetch(`http://localhost:8080/rescheduleAppointment/${appointment.appointmentId}`, {
+				method: "PUT",
+				headers: {"Content-Type": "application/json"},
+				body: JSON.stringify(appointment)
+			})
+				.then(response => {
+					if (response.ok) {
+						Swal.fire({
+							title: "Success!",
+							text: "Your appointment has been Rescheduled.",
+							icon: "success",
+							confirmButtonText: "OK"
+						}).then(() => {
+							window.location.href = "/viewAllAppointment";
+						});
+					} else {
+						Swal.fire({
+							title: "Error!",
+							text: "Error rescheduling appointment: " + data.message,
+							icon: "error",
+							confirmButtonText: "OK"
+						});
+					}
+				})
+				.catch(error => console.error("Error:", error));
+		}
+	</script>
+</body>
+
+</html>

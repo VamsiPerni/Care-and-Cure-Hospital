@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment Management Admin Portal</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        /* Global Styling */
+        body {
+            background-color: #F0F0F0;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Welcome Message Styling */
+        #welcome {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #FFFFFF;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeOut 6s forwards;
+        }
+
+        .welcome-container {
+            text-align: center;
+            background: #FFFFFF;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .welcome-container i {
+            font-size: 80px;
+            color: #007BFF;
+            margin-bottom: 20px;
+        }
+
+        .welcome-container h1 {
+            font-size: 36px;
+            color: #007BFF;
+            font-weight: bold;
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+
+        /* Header Styling */
+        .header {
+            font-size: 28px;
+            font-weight: bold;
+            color: white;
+            background-color: #007BFF;
+            padding: 20px;
+            width: 100%;
+            text-align: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 10;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header i {
+            cursor: pointer;
+            margin-right: 10px;
+            font-size: 24px;
+            color: white;
+        }
+
+        .header i:hover {
+            color: #f0f0f0;
+        }
+
+        /* Container for Main and Sub-sections */
+        .container {
+    margin-top: 80px;
+    width: 100%;
+    max-width: 100%;
+    padding: 20px; /* Remove horizontal padding to bring the scrollbar to the edge */
+    overflow-y: auto;
+    height: calc(100vh - 80px);
+    opacity: 1;
+    scrollbar-width: thin; /* For Firefox */
+    scrollbar-color: #95989a #e2dede; /* For Firefox */
+}
+
+/* Scrollbar Styling for WebKit browsers (Chrome, Safari, Edge) */
+.container::-webkit-scrollbar {
+    width: 8px; /* Width of the scrollbar */
+}
+
+.container::-webkit-scrollbar-track {
+    background: #7b7b7b; /* Color of the track */
+}
+
+.container::-webkit-scrollbar-thumb {
+    background: #838181; /* Color of the scrollbar thumb */
+    border-radius: 4px; /* Rounded corners for the thumb */
+}
+
+.container::-webkit-scrollbar-thumb:hover {
+    background: #fcfcfc; /* Color of the scrollbar thumb on hover */
+}
+
+        /* Main Sections Styling */
+        .main-sections {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 30px;
+            padding: 20px;
+        }
+
+        .main-section {
+            background-color: #FFFFFF;
+            border-radius: 15px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 250px;
+            cursor: pointer;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            text-align: center;
+        }
+
+        .main-section:hover {
+            transform: translateY(-10px);
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .main-section i {
+            font-size: 50px;
+            color: #007BFF;
+            margin-bottom: 20px;
+        }
+
+        .main-section h2 {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007BFF;
+            margin: 0;
+        }
+
+        /* Sub-sections Styling */
+        .sub-sections {
+    display: none;
+    margin: 40px auto; /* Center the sub-sections horizontally */
+    padding: 20px;
+    background-color: #FFFFFF;
+    border-radius: 15px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    width: 80%; /* Adjust the width to make it smaller */
+    max-width: 600px; /* Set a maximum width to prevent it from becoming too wide */
+}
+
+        .sub-section {
+            background-color: #F8F9FA;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: left;
+            cursor: pointer;
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+
+        .sub-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .sub-section i {
+            font-size: 30px;
+            color: #007BFF;
+            margin-right: 15px;
+        }
+
+        .sub-section a {
+            font-size: 18px;
+            font-weight: 500;
+            color: #007BFF;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .sub-section a:hover {
+            color: #0056b3;
+        }
+
+        /* Active State */
+        .active {
+            display: block;
+        }
+
+        /* Loading Message Styling */
+        #loadingMessage {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #FFFFFF;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            display: none;
+        }
+
+        .loading-container {
+            text-align: center;
+            background: #FFFFFF;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .loading-container i {
+            font-size: 80px;
+            color: #007BFF;
+            margin-bottom: 20px;
+        }
+
+        .loading-container h1 {
+            font-size: 36px;
+            color: #007BFF;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Welcome Message -->
+    <div id="welcome">
+        <div class="welcome-container">
+            <i class="fas fa-user-shield"></i>
+            <h1>Welcome to the Payment Management Admin</h1>
+        </div>
+    </div>
+
+    <!-- Loading Message -->
+    <div id="loadingMessage">
+        <div class="loading-container">
+            <i class="fas fa-spinner fa-spin"></i>
+            <h1>Hold-on, page loading...</h1>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+
+		<button class="dashboard-btn" onclick="goToDashboard()">Dashboard</button>
+        <i class="fas fa-home" onclick="resetView()"></i>
+        Payment Management Admin Portal
+    </div>
+
+    <!-- Container for Main and Sub-sections -->
+    <div class="container" id="mainContent">
+        <!-- Main Sections -->
+        <div class="main-sections">
+            <!-- Transaction Management -->
+            <div class="main-section" onclick="showSubSection('transactionManagement')">
+                <i class="fas fa-cogs"></i>
+                <h2>Transaction Management</h2>
+            </div>
+
+            <!-- View Methods -->
+            <div class="main-section" onclick="showSubSection('viewMethods')">
+                <i class="fas fa-eye"></i>
+                <h2>View Methods</h2>
+            </div>
+
+            <!-- Report Methods -->
+            <div class="main-section" onclick="showSubSection('reportMethods')">
+                <i class="fas fa-file-alt"></i>
+                <h2>Report Methods</h2>
+            </div>
+        </div>
+
+        <!-- Sub-sections -->
+        <!-- Transaction Management Sub-sections -->
+        <div id="transactionManagement" class="sub-sections">
+            <div class="sub-section">
+                <a th:href="@{/addTransactionForm}" onclick="showLoading(); sessionStorage.setItem('openSubSection', 'transactionManagement');">
+                    <i class="fas fa-plus"></i> Add Transaction
+                </a>
+            </div>
+            <div class="sub-section">
+                <a th:href="@{/updateTransactionForm}" onclick="showLoading(); sessionStorage.setItem('openSubSection', 'transactionManagement');">
+                    <i class="fas fa-edit"></i> Update Transaction
+                </a>
+            </div>
+            <div class="sub-section">
+                <a th:href="@{/deleteTransactionForm}" onclick="showLoading(); sessionStorage.setItem('openSubSection', 'transactionManagement');">
+                    <i class="fas fa-trash"></i> Delete Transaction
+                </a>
+            </div>
+        </div>
+
+        <!-- View Methods Sub-sections -->
+        <div id="viewMethods" class="sub-sections">
+            <div class="sub-section">
+                <a th:href="@{/viewAllTransactions}" onclick="showLoading(); sessionStorage.setItem('openSubSection', 'viewMethods');">
+                    <i class="fas fa-list"></i> View All Transactions
+                </a>
+            </div>
+            <div class="sub-section">
+                <a th:href="@{/viewTransaction}" onclick="showLoading(); sessionStorage.setItem('openSubSection', 'viewMethods');">
+                    <i class="fas fa-search"></i> View Transactions by ID
+                </a>
+            </div>
+            <div class="sub-section">
+                <a th:href="@{/viewTransactionByModeForm}" onclick="showLoading(); sessionStorage.setItem('openSubSection', 'viewMethods');">
+                    <i class="fas fa-filter"></i> View Transactions by Method
+                </a>
+            </div>
+            <div class="sub-section">
+                <a th:href="@{/viewTransactionByDateForm}" onclick="showLoading(); sessionStorage.setItem('openSubSection', 'viewMethods');">
+                    <i class="fas fa-calendar"></i> View Transactions by Date
+                </a>
+            </div>
+            <div class="sub-section">
+                <a th:href="@{/viewTransactionsByStatusForm}" onclick="showLoading(); sessionStorage.setItem('openSubSection', 'viewMethods');">
+                    <i class="fas fa-check-circle"></i> View Transactions by Status
+                </a>
+            </div>
+            <div class="sub-section">
+                <a th:href="@{/viewPaymentByBillId}" onclick="showLoading(); sessionStorage.setItem('openSubSection', 'viewMethods');">
+                    <i class="fas fa-file-invoice"></i> View Transaction by Bill ID
+                </a>
+            </div>
+            <div class="sub-section">
+                <a th:href="@{/viewPaymentPatientwise}" onclick="showLoading(); sessionStorage.setItem('openSubSection', 'viewMethods');">
+                    <i class="fas fa-user"></i> View Transaction Patient-wise
+                </a>
+            </div>
+        </div>
+
+        <!-- Report Methods Sub-sections -->
+        <div id="reportMethods" class="sub-sections">
+            <div class="sub-section">
+                <a th:href="@{/razorpayPaymentForm}" onclick="showLoading(); sessionStorage.setItem('openSubSection', 'reportMethods');">
+                    <i class="fas fa-credit-card"></i> Make Payment
+                </a>
+            </div>
+            <div class="sub-section">
+                <a th:href="@{/generatePaymentHistoryReportForm}" onclick="showLoading(); sessionStorage.setItem('openSubSection', 'reportMethods');">
+                    <i class="fas fa-history"></i> Payment History
+                </a>
+            </div>
+            <div class="sub-section">
+                <a th:href="@{/insuranceClaims}" onclick="showLoading(); sessionStorage.setItem('openSubSection', 'reportMethods');">
+                    <i class="fas fa-file-medical"></i> Insurance Claims
+                </a>
+            </div>
+            <div class="sub-section">
+                <a th:href="@{/dailyPaymentSummaryForm}" onclick="showLoading(); sessionStorage.setItem('openSubSection', 'reportMethods');">
+                    <i class="fas fa-chart-line"></i> Daily Payment Summary
+                </a>
+            </div>
+            <div class="sub-section">
+                <a th:href="@{/paymentMethodAnalysisForm}" onclick="showLoading(); sessionStorage.setItem('openSubSection', 'reportMethods');">
+                    <i class="fas fa-chart-pie"></i> Payment Method Analysis
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check if the welcome message has already been shown
+        if (!sessionStorage.getItem('welcomeShown')) {
+            const welcome = document.getElementById('welcome');
+            welcome.style.display = 'flex';
+            sessionStorage.setItem('welcomeShown', 'true');
+            setTimeout(() => {
+                welcome.style.display = 'none';
+            }, 6000);
+        } else {
+            const welcome = document.getElementById('welcome');
+            welcome.style.display = 'none';
+        }
+
+        // Function to show the corresponding sub-section when a main section is clicked
+        function showSubSection(section) {
+            const subSections = document.querySelectorAll('.sub-sections');
+            subSections.forEach(function(subSection) {
+                subSection.classList.remove('active');
+            });
+
+            const selectedSubSection = document.getElementById(section);
+            selectedSubSection.classList.add('active');
+
+            sessionStorage.setItem('openSubSection', section);
+
+            document.querySelector('.container').scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Function to reset the view to the main sections
+        function resetView() {
+            const subSections = document.querySelectorAll('.sub-sections');
+            subSections.forEach(function(subSection) {
+                subSection.classList.remove('active');
+            });
+
+            sessionStorage.removeItem('openSubSection');
+
+            document.querySelector('.container').scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Function to show the loading message
+        function showLoading() {
+            const loadingMessage = document.getElementById('loadingMessage');
+            const mainContent = document.getElementById('mainContent');
+            loadingMessage.style.display = 'flex';
+            mainContent.style.opacity = '0';
+
+            setTimeout(() => {
+                loadingMessage.style.display = 'none';
+                mainContent.style.opacity = '1';
+               // alert('Page loaded!'); // Replace with actual navigation logic
+            }, 2000);
+        }
+
+        // On page load, restore the open sub-section if it exists
+        window.onload = function() {
+            const openSubSection = sessionStorage.getItem('openSubSection');
+            if (openSubSection) {
+                showSubSection(openSubSection);
+            }
+        };
+    </script>
+</body>
+</html>

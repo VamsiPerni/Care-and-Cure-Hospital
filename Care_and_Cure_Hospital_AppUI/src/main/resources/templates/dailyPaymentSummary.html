@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Daily Payment Summary</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3a0ca3;
+            --accent-color: #f72585;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --success-color: #4cc9f0;
+            --warning-color: #f8961e;
+            --danger-color: #ef233c;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            color: var(--dark-color);
+        }
+
+        .glass-container {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            width: 95%;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 40px;
+            transition: all 0.5s ease;
+        }
+
+        .glass-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .report-header {
+            text-align: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .report-header h2 {
+            font-weight: 700;
+            color: var(--secondary-color);
+            margin-bottom: 15px;
+            font-size: 2.5rem;
+        }
+
+        .report-header::after {
+            content: '';
+            display: block;
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-color), var(--primary-color));
+            margin: 20px auto;
+            border-radius: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+            color: var(--secondary-color);
+        }
+
+        .form-control {
+            height: 50px;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            font-size: 16px;
+            padding-left: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(247, 37, 133, 0.25);
+            outline: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-color), var(--primary-color));
+            border: none;
+            color: white;
+            padding: 12px 25px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(247, 37, 133, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 200px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(247, 37, 133, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: white;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 12px 25px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 200px;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(67, 97, 238, 0.1);
+            transform: translateY(-3px);
+        }
+
+        .btn-secondary:active {
+            transform: translateY(0);
+        }
+
+        .alert-message {
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-top: 20px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .alert-message.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .alert-danger {
+            background-color: rgba(239, 35, 60, 0.15);
+            border: 1px solid rgba(239, 35, 60, 0.3);
+            color: var(--danger-color);
+        }
+
+        .results-section {
+            margin-top: 40px;
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        .results-section.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-top: 30px;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            font-weight: 600;
+            border: none;
+            padding: 15px 20px;
+        }
+
+        .table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .table tbody tr:hover {
+            background-color: rgba(67, 97, 238, 0.05);
+            transform: translateX(5px);
+        }
+
+        .table tbody td {
+            padding: 15px 20px;
+            vertical-align: middle;
+            border-top: 1px solid rgba(0, 0, 0, 0.03);
+        }
+
+        @media (max-width: 768px) {
+            .glass-container {
+                padding: 25px;
+                margin: 20px auto;
+                border-radius: 15px;
+            }
+
+            .report-header h2 {
+                font-size: 2rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate {
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        .delay-1 {
+            animation-delay: 0.1s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.2s;
+        }
+    </style>
+</head>
+<body>
+    <div class="glass-container">
+        <div class="report-header animate">
+            <h2><i class="fas fa-file-alt mr-2"></i>Daily Payment Summary</h2>
+        </div>
+
+        <!-- Select Date -->
+        <div class="form-group animate delay-1">
+            <label for="date">Select Date:</label>
+            <input type="date" id="date" class="form-control" required>
+        </div>
+
+        <!-- Button Group -->
+        <div class="mt-3 d-flex justify-content-center gap-2 animate delay-2">
+            <button onclick="fetchSummary()" class="btn btn-primary">
+                <i class="fas fa-chart-line mr-2"></i>Fetch Summary
+            </button>
+            <a th:href="@{/homePayment}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left mr-2"></i>back to dashboard
+            </a>
+        </div>
+
+        <!-- Display Errors -->
+        <div id="errorContainer" class="alert-message alert-danger">
+            <i class="fas fa-exclamation-circle mr-2"></i>
+            <span id="errorText"></span>
+        </div>
+
+        <!-- Display Payment Summary -->
+        <div id="summaryContainer" class="results-section">
+            <h4 class="text-center animate delay-1">Payment Summary for <span id="summaryDate"></span></h4>
+            <div class="table-container animate delay-2">
+                <table class="table table-bordered mt-4">
+                    <thead>
+                        <tr>
+                            <th>Cash Total</th>
+                            <th>Credit Card Total</th>
+                            <th>Debit Card Total</th>
+                            <th>UPI Total</th>
+                            <th>Total Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td id="cashTotal"></td>
+                            <td id="creditCardTotal"></td>
+                            <td id="debitCardTotal"></td>
+                            <td id="upiTotal"></td>
+                            <td id="totalAmount"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function fetchSummary() {
+            let selectedDate = document.getElementById("date").value;
+            if (!selectedDate) {
+                showError("⚠️ Please select a date.");
+                return;
+            }
+
+            let apiUrl = `http://localhost:8080/dailyPaymentSummary?date=${selectedDate}`;
+
+            // Show loading state
+            document.getElementById("summaryContainer").style.display = "none";
+            document.getElementById("errorContainer").classList.remove("show");
+
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Failed to fetch payment summary.");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById("summaryDate").innerText = data.date;
+                    document.getElementById("cashTotal").innerText = data.cashTotal;
+                    document.getElementById("creditCardTotal").innerText = data.creditCardTotal;
+                    document.getElementById("debitCardTotal").innerText = data.debitCardTotal;
+                    document.getElementById("upiTotal").innerText = data.upiTotal;
+                    document.getElementById("totalAmount").innerText = data.totalAmount;
+
+                    document.getElementById("summaryContainer").style.display = "block";
+                    setTimeout(() => {
+                        document.getElementById("summaryContainer").classList.add("show");
+                    }, 50);
+                    document.getElementById("errorContainer").classList.remove("show");
+                })
+                .catch(error => {
+                    document.getElementById("summaryContainer").style.display = "none";
+                    showError("❌ Error fetching data: " + error.message);
+                    console.error("Error:", error);
+                });
+        }
+
+        function showError(message) {
+            document.getElementById("errorText").textContent = message;
+            document.getElementById("errorContainer").classList.add("show");
+        }
+    </script>
+</body>
+</html>

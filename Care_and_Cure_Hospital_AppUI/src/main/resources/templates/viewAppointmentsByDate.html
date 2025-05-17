@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>View Appointments by Date</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+	<link rel="stylesheet" href="/css/styleApp.css">
+	
+	<style>
+		body {
+			background-image: url('img/addbg.webp');
+			background-size: 20%;
+			font-family: 'Poppins', sans-serif;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 100vh;
+			margin: 0;
+		}
+
+		.header {
+			background: rgba(0, 123, 255, 0.9);
+			color: white;
+			text-align: center;
+			padding: 20px;
+			font-size: 30px;
+			font-weight: bold;
+			position: fixed;
+			top: 0;
+			width: 100%;
+			height: 12%;
+			z-index: 1000;
+			box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+		}
+
+		.container {
+			display: flex;
+			background: white;
+			border-radius: 10px;
+			box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+			overflow: hidden;
+			max-width: 900px;
+			width: 100%;
+		}
+
+		.left-section {
+			width: 50%;
+			background: url('/img/downloadbydate.jpg') no-repeat center center;
+			background-size: 80%;
+		}
+
+		.right-section {
+			width: 50%;
+			padding: 40px;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+		}
+
+		h2 {
+			color: #007bff;
+			font-weight: bold;
+			text-align: center;
+		}
+
+		.btn-primary {
+			background-color: #007bff;
+			border: none;
+			width: 100%;
+			font-size: 16px;
+			transition: 0.3s;
+		}
+
+		.btn-primary:hover {
+			background-color: #004494;
+		}
+
+		.alert {
+			padding: 10px;
+			border-radius: 5px;
+			font-weight: bold;
+			text-align: center;
+		}
+
+		.alert-danger {
+			background-color: #f8d7da;
+			color: #721c24;
+			border: 1px solid #f5c6cb;
+		}
+	</style>
+	<script>
+		function fetchAppointmentsByDate() {
+			let date = document.getElementById("appointmentDate").value;
+			let appointmentDetails = document.getElementById("appointmentsTableBody");
+			let errorMessage = document.getElementById("error-message");
+
+			if (!date) {
+				errorMessage.textContent = "⚠️ Please enter a valid date.";
+				errorMessage.style.display = "block";
+				appointmentDetails.innerHTML = "";
+				return;
+			}
+
+			fetch(`http://localhost:8080/viewAppointmentsByDate?date=${date}`)
+				.then(response => {
+					if (response.status === 404) {
+						throw new Error(`No appointments found for ${date}.`);
+					}
+					return response.json();
+				})
+				.then(data => {
+					if (data.length === 0) {
+						errorMessage.innerHTML = `❌ No appointments found for <strong>${date}</strong>.`;
+						errorMessage.style.display = "block";
+						appointmentDetails.innerHTML = "";
+						return;
+					}
+
+					errorMessage.style.display = "none";
+					appointmentDetails.innerHTML = data.map(appointment => `
+                        <tr>
+                            <td>${appointment.appointmentId || "NA"}</td>
+							<td>${appointment.patient.patientName || "NA"}</td>
+							<td>Dr. ${appointment.doctor.doctorName.firstName || "NA"} ${appointment.doctor.doctorName.lastName || "NA"}</td>
+                            <td>${appointment.appointmentDate || "NA"}</td>
+                            <td>${appointment.slot || "NA"}</td>
+                            <td>${appointment.reasonForVisit || "NA"}</td>
+                            <td>${appointment.status || "NA"}</td>
+                        </tr>
+                    `).join("");
+				})
+				.catch(error => {
+					appointmentDetails.innerHTML = "";
+					errorMessage.innerHTML = `<strong>${error.message}</strong>`;
+					errorMessage.style.display = "block";
+				});
+		}
+	</script>
+</head>
+
+<body>
+	<div class="header"> Appointments By Date
+		<a href="/appHome" class="home-icon">
+			<img src="/img/home-icon.png" alt="Home" />
+		</a>
+	</div>
+
+	<div class="container">
+		<div class="left-section"></div>
+		<div class="right-section">
+			<!--<h2>View Appointments by Date</h2>-->
+			<div class="form-group">
+				<label for="appointmentDate">Select Date:</label>
+				<input type="date" id="appointmentDate" class="form-control" required>
+				<div id="error-message" class="alert alert-danger" style="display: none; margin-top: 10px;"></div>
+			</div>
+			<button onclick="fetchAppointmentsByDate()" class="btn btn-primary">Search</button>
+
+			<div class="table-responsive">
+				<table class="table table-bordered mt-4">
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>Patient Name</th>
+							<th>Doctors Name</th>
+							<th>Date</th>
+							<th>Slot</th>
+							<th>Reason</th>
+							<th>Status</th>
+						</tr>
+					</thead>
+					<tbody id="appointmentsTableBody"></tbody>
+				</table>
+			</div>
+
+		</div>
+	</div>
+</body>
+
+</html>

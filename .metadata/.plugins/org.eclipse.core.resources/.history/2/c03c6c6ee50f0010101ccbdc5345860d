@@ -1,0 +1,10 @@
+package com.cac.exceptionHandler;
+
+
+@SuppressWarnings("serial")
+public class BillNotFound extends RuntimeException {
+
+    public BillNotFound(String message) {
+        super(message);
+    }
+}

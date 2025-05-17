@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Reports</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Reports</h2>
+        
+        <!-- Daily Appointments Report -->
+        <h4>Daily Appointment Report</h4>
+        <form th:action="@{/ui/patients/report/dailyAppointments}" method="get">
+            <div class="form-group">
+                <label>Select Date</label>
+                <input type="date" name="date" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Generate Report</button>
+        </form>
+        <p th:if="${dailyReport}" class="alert alert-info" th:text="${dailyReport}"></p>
+        
+        <!-- No-Show Report -->
+        <h4>No-Show Report</h4>
+        <form th:action="@{/ui/patients/report/noShows}" method="get">
+            <div class="form-group">
+                <label>Start Date</label>
+                <input type="date" name="startDate" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>End Date</label>
+                <input type="date" name="endDate" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-warning">Generate Report</button>
+        </form>
+        <p th:if="${noShowReport}" class="alert alert-warning" th:text="${noShowReport}"></p>
+        
+        <!-- Patients by Health Issue Report -->
+        <h4>Patients by Health Issue</h4>
+        <form th:action="@{/ui/patients/report/healthIssue}" method="get">
+            <div class="form-group">
+                <label>Enter Health Issue</label>
+                <input type="text" name="issue" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-dark">Generate Report</button>
+        </form>
+        <p th:if="${healthIssueReport}" class="alert alert-dark" th:text="${healthIssueReport}"></p>
+        
+        <a th:href="@{/}" class="btn btn-secondary mt-3">Back to Home</a>
+    </div>
+</body>
+</html>

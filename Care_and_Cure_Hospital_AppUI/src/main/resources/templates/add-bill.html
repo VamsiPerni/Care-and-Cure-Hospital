@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Billing Management - Care and Cure</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.1/flowbite.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.1/flowbite.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@404;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Common Sidebar Styles from adminDashboard.html */
+		html, body {
+		    height: 100%;
+		    margin: 0;
+		    padding: 0;
+		}
+
+		body {
+		    font-family: 'Poppins', sans-serif;
+		    display: flex;
+		    flex-direction: column;
+		    min-height: 100vh;
+		   
+			
+		}
+
+		@keyframes gradientAnimation {
+		    0% { background-position: 0% 50%; }
+		    50% { background-position: 100% 50%; }
+		    100% { background-position: 0% 50%; }
+		}
+
+		.main-content {
+		    flex: 1;
+		    padding: 40px;
+		    background: rgba(255, 255, 255, 0.85); /* Slight transparency */
+		    position: relative;
+		    overflow-y: auto;
+			background: linear-gradient(-45deg, #85d4ff, #e0faff, rgb(184, 224, 254), rgb(108, 179, 255));
+			background-size: 400% 400%;
+			animation: gradientAnimation 10s ease infinite;
+		    
+		    margin-left: 250px;
+		}
+
+
+
+
+        .sidebar {
+            background: #FFFFFF; /* White background */
+            color: #007BFF; /* Blue text */
+            width: 250px;
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            overflow-y: auto; /* Enable vertical scrolling */
+        }
+        .sidebar h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #007BFF; /* Blue text */
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            margin-bottom: 15px;
+        }
+        .sidebar ul li a {
+            color: #007BFF; /* Blue text */
+            text-decoration: none;
+            font-size: 18px;
+            display: block;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background 0.3s, color 0.3s;
+            display: flex; /* For aligning arrow */
+            justify-content: space-between; /* For aligning arrow */
+            align-items: center; /* For aligning arrow */
+        }
+        .sidebar ul li a:hover {
+            background: #007BFF; /* Blue background */
+            color: #FFFFFF; /* White text */
+        }
+        .sidebar ul li ul {
+            margin-left: 20px;
+            display: none;
+        }
+        .sidebar ul li:hover ul {
+            display: block;
+        }
+
+       
+
+        .form-container {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+            width: 700px;
+            margin: 20px auto;
+        }
+
+        .input-field {
+            width: calc(100% - 28px);
+            padding: 14px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            transition: border-color 0.3s ease;
+        }
+
+        .input-field:focus {
+            border-color: #3b82f6;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+
+        .submit-button, .cancel-button {
+            background-color: #3b82f6;
+            color: white;
+            padding: 14px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            font-weight: 500;
+            margin-top: 20px;
+            box-shadow: 0 0 5px rgba(59, 130, 246, 0.4);
+        }
+
+        .submit-button:hover, .cancel-button:hover {
+            background-color: #2563eb;
+            box-shadow: 0 0 8px rgba(37, 99, 235, 0.6);
+            transform: scale(1.02);
+        }
+
+        .cancel-button {
+            background-color: #d1d5db;
+            color: #374151;
+            margin-left: 10px;
+             box-shadow: 0 0 5px rgba(209, 213, 219, 0.4);
+        }
+
+        .form-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .form-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .form-row label {
+            width: 150px;
+            text-align: left;
+            margin-right: 10px;
+        }
+
+        .radio-group {
+            display: flex;
+            align-items: center;
+        }
+
+        .radio-group label {
+            margin: 0 10px;
+        }
+
+        .radio-group input[type="radio"] {
+            margin-right: 5px;
+        }
+
+        .form-container.search-form {
+            width: 700px;
+        }
+
+        .search-form .submit-button {
+            margin-top: 0;
+            margin-left: 280px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>Care and Cure</h2>
+        <ul>
+			<li><a href="/adminDashboard" >Home</a></li>
+			   <li><a href="/docHome" >Doctor</a></li>
+	              <li><a href="/appHome" >Appointment</a></li>
+	              <li><a href="/ui/patients/" >Patient</a></li>			
+	   			<li><a href="/homePayment">Payment</a></li>
+			  
+				<li>
+				    <a href="/billing/billHome" onclick="handleBillingClick(event, this);">
+				        Billing
+				    </a>
+				    <ul id="billingDropdown">
+				        <li><a th:href="@{/billing/addNewBill}">Add Bill</a></li>
+				        <li><a th:href="@{/billing/updateBill}">Update Bill</a></li>
+				        <li><a th:href="@{/billing/viewTransaction}">View Bills</a></li>
+				    </ul>
+				</li>
+			</li>
+
+          <!--  <li>
+                <a href="#" onclick="toggleDropdown('ambulanceDropdown', this);">
+                    Ambulance
+                </a>
+                <ul id="ambulanceDropdown">
+                    <li><a href="#" onclick="showAmbulanceList()">Ambulance List</a></li>
+                    <li><a href="#" onclick="showAddAmbulance()">Add Ambulance</a></li>
+                    <li><a href="#" onclick="showEditAmbulance()">Edit Ambulance</a></li>
+                </ul>
+            </li>
+
+            <li>
+                <a href="#" onclick="toggleDropdown('departmentDropdown', this);">
+                    Department
+                </a>
+                <ul id="departmentDropdown">
+                    <li><a href="#" onclick="showDepartmentList()">Department List</a></li>
+                    <li><a href="#" onclick="showAddDepartment()">Add Department</a></li>
+                    <li><a href="#" onclick="showEditDepartment()">Edit Department</a></li>
+                </ul>
+            </li>-->
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <div class="max-w-4xl mx-auto space-y-6">
+            <h1 class="text-2xl font-semibold mb-6 text-center">ADD A NEW BILL</h1>
+
+            <div class="form-container search-form" style="margin-top:10px">
+                <form method="get" action="/billing/search" class="space-y-4">
+                    <div class="form-row">
+                        <label>Patient ID:</label>
+                        <input type="number" name="patientId" required class="input-field" />
+                    </div>
+                    <button type="submit" class="submit-button">Proceed</button>
+                </form>
+            </div>
+
+            <div th:if="${patientId}" class="form-container">
+                <form id="billForm" th:action="@{/billing/add}" method="post" class="space-y-4">
+                    <div>
+                        <label class="block font-semibold text-gray-700">Select Appointment:</label>
+                        <select name="appointmentId" required class="input-field">
+                            <option th:each="appointment : ${appointments}" th:value="${appointment.appointmentId}" th:text="${appointment.appointmentDate}"></option>
+                        </select>
+                    </div>
+                    <input type="hidden" name="patientId" th:value="${patientId}" />
+
+                    <div class="form-row">
+                        <label>Consultation Fees:</label>
+                        <input type="number" name="consultationFees" required class="input-field">
+                    </div>
+                    <div class="form-row">
+                        <label>Medicine Fees:</label>
+                        <input type="number" name="medicineFees" class="input-field">
+                    </div>
+                    <div class="form-row">
+                        <label>Test Charges:</label>
+                        <input type="number" name="testCharges" class="input-field">
+                    </div>
+                    <div class="form-row">
+                        <label>Miscellaneous Charges:</label>
+                        <input type="number" name="miscellaneousCharge" class="input-field">
+                    </div>
+                    <div class="form-row">
+                        <label>Description:</label>
+                        <input type="text" name="description" required class="input-field">
+                    </div>
+                    <div class="form-row">
+                        <label>Insurance Eligibility:</label>
+                        <div class="radio-group">
+                            <input type="radio" id="insuranceYes" name="isInsuranceApplicable" value="true" checked>
+                            <label for="insuranceYes">Yes</label>
+                            <input type="radio" id="insuranceNo" name="isInsuranceApplicable" value="false">
+                            <label for="insuranceNo">No</label>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <label>Tax:</label>
+                        <div class="radio-group">
+                            <input type="radio" id="taxYes" name="tax" value="true" checked>
+                            <label for="taxYes">Yes</label>
+                            <input type="radio" id="taxNo" name="tax" value="false">
+                            <label for="taxNo">No</label>
+                        </div>
+                    </div>
+                    <div class="flex justify-center">
+                        <button type="submit" id="submitBtn" class="submit-button">Add Bill</button>
+                        <button type="button" class="cancel-button" onclick="window.location.href='/billing/billHome'">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleDropdown(id, element) {
+            var dropdown = document.getElementById(id);
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+            element.querySelector('.arrow').classList.toggle('rotate');
+        }
+
+        function handleBillingClick(event, element) {
+            if (!event.target.classList.contains('arrow')) {
+                window.location.href = "/billing/billHome";
+            } else {
+                event.preventDefault();
+                toggleDropdown('billingDropdown', element);
+            }
+        }
+
+        document.getElementById("billForm")?.addEventListener("submit", function () {
+            document.getElementById("submitBtn").disabled = true;
+        });
+    </script>
+</body>
+</html>

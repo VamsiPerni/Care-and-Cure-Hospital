@@ -1,0 +1,155 @@
+package com.cac.exception;
+
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+@RestControllerAdvice
+public class GlobalExceptionHandler {
+
+    // Common response structure for validation errors
+    private Map<String, Object> createErrorResponse(HttpStatus status, String error, String message) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("timestamp", LocalDateTime.now());
+        response.put("status", status.value());
+        response.put("error", error);
+        response.put("message", message);
+        return response;
+    }
+
+    @ExceptionHandler(InvalidEntityException.class)
+    public ResponseEntity<Map<String, Object>> handleInvalidEntityException(InvalidEntityException ex) {
+        Map<String, Object> response = createErrorResponse(
+            HttpStatus.BAD_REQUEST, 
+            "Validation Error", 
+            ex.getMessage()
+        );
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, Object>> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+        Map<String, Object> response = createErrorResponse(
+            HttpStatus.BAD_REQUEST, 
+            "Validation Error", 
+            "Validation failed"
+        );
+        
+        Map<String, String> fieldErrors = new HashMap<>();
+        for (FieldError error : ex.getBindingResult().getFieldErrors()) {
+            fieldErrors.put(error.getField(), error.getDefaultMessage());
+        }
+        response.put("fieldErrors", fieldErrors);
+        
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Map<String, Object>> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+        Map<String, Object> response = createErrorResponse(
+            HttpStatus.BAD_REQUEST, 
+            "Malformed JSON Request", 
+            "Invalid JSON format or missing required fields"
+        );
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({BillNotFound.class, PatientNotFoundException.class})
+    public ResponseEntity<ExceptionMsg> handleNotFoundException(RuntimeException ex) {
+        String msg = ex.getMessage();
+        ExceptionMsg exception = new ExceptionMsg(msg, false);
+        return new ResponseEntity<>(exception, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<Object> handleRuntimeException(RuntimeException ex) {
+        String errorMessage = ex.getMessage();
+        return new ResponseEntity<>(new ErrorResponse(errorMessage), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ExceptionMsg> handleGlobalException(Exception ex) {
+        String msg = "An unexpected error occurred: " + ex.getMessage();
+        ExceptionMsg exception = new ExceptionMsg(msg, false);
+        return new ResponseEntity<>(exception, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    // Inner classes for response objects
+    public static class ErrorResponse {
+        private String message;
+
+        public ErrorResponse(String message) {
+            this.message = message;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+    }
+
+    public static class ExceptionMsg {
+        private String message;
+        private boolean success;
+
+        public ExceptionMsg(String message, boolean success) {
+            this.message = message;
+            this.success = success;
+        }
+
+        // Getters and setters
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+
+        public boolean isSuccess() {
+            return success;
+        }
+
+        public void setSuccess(boolean success) {
+            this.success = success;
+        }
+    }
+    
+// Exceptions for the Payment Module
+	
+//    @ExceptionHandler(RuntimeException.class)
+//    public ResponseEntity<Object> handleRuntimeException(RuntimeException ex) {
+//        
+//        String errorMessage = ex.getMessage();
+//        return new ResponseEntity<>(new ErrorResponse(errorMessage), HttpStatus.NOT_FOUND);
+//    }
+//
+//    
+//    public static class ErrorResponse {
+//        private String message;
+//
+//        public ErrorResponse(String message) {
+//            this.message = message;
+//        }
+//
+//        public String getMessage() {
+//            return message;
+//        }
+//
+//        public void setMessage(String message) {
+//            this.message = message;
+//        }
+//    }
+    
+}

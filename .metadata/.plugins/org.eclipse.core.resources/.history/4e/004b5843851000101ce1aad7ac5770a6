@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>View Transactions by Payment Mode</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>View Transactions by Payment Method</h2>
+        <form th:action="@{/viewTransactionByMode}" method="get">
+            <div class="form-group">
+                <label for="paymentMethod">Select Payment Method:</label>
+                <select id="paymentMethod" name="paymentMethod" class="form-control" required>
+                    <option value="">-- Select Payment Method --</option>
+                    <option value="Credit Card">Credit Card</option>
+                    <option value="Debit Card">Debit Card</option>
+                    <option value="UPI">UPI</option>
+                    <option value="Cash">Cash</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">View Transactions</button>
+        </form>
+
+        <div class="mt-4" th:if="${transactions}">
+            <h3>Transaction Details</h3>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Date</th>
+                        <th>Amount Paid</th>
+                        <th>Payment Method</th>
+                        <th>Payment Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="transaction : ${transactions}">
+                        <td th:text="${transaction.transactionId}"></td>
+                        <td th:text="${transaction.transactionDate}"></td>
+                        <td th:text="${transaction.amountPaid}"></td>
+                        <td th:text="${transaction.paymentMethod}"></td>
+                        <td th:text="${transaction.paymentStatus}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Go to Home Button -->
+        <div class="mt-3">
+            <a th:href="@{/homePayment}" class="btn btn-secondary">Go to Home</a>
+        </div>
+    </div>
+</body>
+</html>

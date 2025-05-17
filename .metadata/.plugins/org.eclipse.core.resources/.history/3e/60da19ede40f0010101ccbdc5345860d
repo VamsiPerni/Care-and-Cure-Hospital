@@ -1,0 +1,5 @@
+package com.cac.dto;
+
+public class BillDTO {
+
+}

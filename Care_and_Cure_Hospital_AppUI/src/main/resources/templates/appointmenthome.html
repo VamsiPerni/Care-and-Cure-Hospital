@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Home - Appointment Management</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	<!-- Poppins font imported from Google Fonts -->
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.11.3/main.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
+	
+
+	<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.11.3/main.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.11.3/locales-all.min.js"></script>
+	<link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css" rel="stylesheet">
+	<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>-->
+
+	<!-- FullCalendar Library -->
+	<!-- FullCalendar CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
+	<!-- FullCalendar JS -->
+	<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+
+	<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+
+	<style>
+		/* Global font applied */
+		body {
+			background-image: url('img/bg.jpg');
+			background-size: 90;
+			font-family: 'Poppins', sans-serif;
+			display: flex;
+			height: 100vh;
+			margin: 0;
+			overflow: hidden;
+		}
+		.home-icon {
+		    position: fixed; /* Keeps it in a fixed position */
+		    top: 20px; /* Align to top */
+		    left: 20px; /* Align to left */
+		    
+		    width: 40px; /* Adjust size */
+		    height: 40px;
+		    
+		    transition: transform 0.2s ease-in-out;
+		}
+		.home-icon img {
+		    width: 100%;
+		    height: 100%;
+		    cursor: pointer;
+		}
+
+		.home-icon:hover {
+		    transform: scale(1.1); /* Slight zoom on hover */
+		}
+
+
+		.home-button:hover {
+		    background-color: #218838; /* Darker green on hover */
+		}
+
+		/* Sidebar styling */
+		.sidebar {
+			width: 300px;
+			background: linear-gradient(135deg, #007bff, #00d4ff);
+			color: white;
+			padding: 20px;
+			height: 100vh;
+			/* Fixed full height */
+			box-shadow: 4px 0px 10px rgba(0, 0, 0, 0.2);
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between;
+			overflow-y: auto;
+			/* Enable vertical scrolling */
+		}
+
+		.sidebar h2 {
+			font-size: 24px;
+			font-weight: 700;
+			text-align: center;
+			margin-bottom: 20px;
+		}
+
+		.menu {
+			list-style: none;
+			padding: 0;
+		}
+
+		.menu li {
+			margin-bottom: 15px;
+		}
+
+		.menu a {
+			display: flex;
+			align-items: center;
+			padding: 12px;
+			color: white;
+			font-weight: 600;
+			text-decoration: none;
+			border-radius: 8px;
+			transition: all 0.3s ease;
+			background: rgba(255, 255, 255, 0.1);
+		}
+
+		.menu a i {
+			margin-right: 10px;
+			font-size: 18px;
+		}
+
+		.menu a:hover {
+			background: rgba(255, 255, 255, 0.3);
+			transform: translateX(5px);
+		}
+
+		.logout {
+			text-align: center;
+			margin-top: auto;
+		}
+
+		.logout a {
+			display: block;
+			padding: 12px;
+			color: white;
+			text-decoration: none;
+			font-weight: 600;
+			border-radius: 8px;
+			background: rgba(255, 255, 255, 0.2);
+			transition: all 0.3s ease;
+		}
+
+		.logout a:hover {
+			background: rgba(255, 255, 255, 0.3);
+		}
+
+		/* Main Content styling */
+		.menu a:hover {
+			transform: translateX(5px);
+		}
+
+		.main-content {
+			flex-grow: 1;
+			display: flex;
+			flex-direction: column;
+			padding: 20px;
+			background: rgba(255, 255, 255, 0.6);
+			overflow-y: auto;
+		}
+
+		.top-section {
+			display: flex;
+			justify-content: space-between;
+			margin-bottom: 20px;
+		}
+
+		.calendar-container,
+		.today-appointments {
+			flex: 1;
+			background: white;
+			padding: 15px;
+			border-radius: 10px;
+			box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+			margin: 10px;
+		}
+
+		.reports-container {
+			display: flex;
+			justify-content: space-between;
+		}
+
+		.chart-box {
+			width: 48%;
+			background: white;
+			padding: 15px;
+			border-radius: 10px;
+			box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+		}
+
+		/* Restrict table styles to only appointment tables */
+		.appointment-table {
+			width: 100%;
+			border-collapse: collapse;
+			margin-top: 10px;
+		}
+
+		.appointment-table th,
+		.appointment-table td {
+			border: 1px solid #ddd;
+			padding: 8px;
+			text-align: left;
+		}
+
+		.appointment-table th {
+			background-color: #007bff;
+			color: white;
+		}
+
+		.appointment-table tbody tr:nth-child(odd) {
+			background-color: #f9f9f9;
+		}
+	</style>
+
+	<script>
+
+		document.addEventListener('DOMContentLoaded', function () {
+			let calendarEl = document.getElementById('calendar');
+
+			let calendar = new FullCalendar.Calendar(calendarEl, {
+				initialView: 'dayGridMonth',
+				events: function (fetchInfo, successCallback, failureCallback) {
+					fetch("http://localhost:8080/appointmentCounts")
+						.then(response => response.json())
+						.then(data => {
+							console.log("API Response:", data); // Debugging
+
+							let events = [];
+
+							data.forEach(appointment => {
+								let date = appointment.appointmentDate;
+								let scheduledCount = appointment.scheduled || 0;
+								let rescheduledCount = appointment.rescheduled || 0;
+								let cancelledCount = appointment.cancelled || 0;
+
+								if (scheduledCount > 0) {
+									events.push({
+										title: `S-${scheduledCount}`,
+										start: date,
+										status: "scheduled",
+										count: scheduledCount,
+										allDay: true
+									});
+								}
+								if (rescheduledCount > 0) {
+									events.push({
+										title: `R-${rescheduledCount}`,
+										start: date,
+										status: "rescheduled",
+										count: rescheduledCount,
+										allDay: true
+									});
+								}
+								if (cancelledCount > 0) {
+									events.push({
+										title: `C-${cancelledCount}`,
+										start: date,
+										status: "cancelled",
+										count: cancelledCount,
+										allDay: true
+									});
+								}
+							});
+
+							successCallback(events);
+						})
+						.catch(error => {
+							console.error("Error fetching appointments:", error);
+							failureCallback(error);
+						});
+				},
+				eventContent: function (arg) {
+					let status = arg.event.extendedProps.status;
+					let count = arg.event.extendedProps.count;
+
+					// Set colors based on status
+					let bgColor;
+					if (status === "scheduled") bgColor = "green";
+					else if (status === "rescheduled") bgColor = "orange";
+					else if (status === "cancelled") bgColor = "red";
+
+					return {
+						html: `<div style="background-color:${bgColor}; color:white; padding: 5px; border-radius: 5px; text-align: center;">
+		                           <b>${status.charAt(0).toUpperCase()}-${count}</b>
+		                       </div>`
+					};
+				}
+			});
+
+			calendar.render();
+
+
+
+
+			// Fetch today's appointments
+			fetchTodayAppointments();
+			//fetchAppointmentCounts();
+		});
+
+		function fetchTodayAppointments() {
+			fetch("http://localhost:8080/viewTodayAppointments")
+				.then(response => {
+					console.log("Response Status:", response.status);
+					if (!response.ok) {
+						throw new Error("Network response was not ok");
+					}
+					return response.json();
+				})
+				.then(data => {
+					console.log("Today's Appointments Data:", data); // Debugging log
+					updateTodayAppointmentsTable(data);
+				})
+				.catch(error => console.error("Error fetching today's appointments:", error));
+		}
+
+		function updateTodayAppointmentsTable(todayAppointments) {
+			console.log("Updating Table with:", todayAppointments); // Debugging log
+
+			const tableBody = document.getElementById('today-appointments-body');
+			tableBody.innerHTML = '';
+
+			if (!todayAppointments || todayAppointments.length === 0) {
+				tableBody.innerHTML = '<tr><td colspan="4" class="text-center">No appointments today.</td></tr>';
+				return;
+			}
+
+			todayAppointments.forEach(appointment => {
+				let doctorFirstName = appointment.doctor?.doctorName?.firstName || "";
+				let doctorLastName = appointment.doctor?.doctorName?.lastName || "";
+				let doctorName = (doctorFirstName || doctorLastName)
+					? `Dr. ${doctorFirstName} ${doctorLastName}`.trim()
+					: "Unknown";
+				let patientName = appointment.patient?.patientName || "Unknown";
+
+				let row = `<tr>
+		            <td>${appointment.slot || 'N/A'}</td>
+		            <td>${doctorName}</td>
+		            <td>${patientName}</td>
+		            <td>${appointment.reasonForVisit || 'N/A'}</td>
+		        </tr>`;
+				tableBody.innerHTML += row;
+			});
+
+			console.log("Table Updated Successfully!");
+		}
+
+
+
+	</script>
+
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+			fetchMonthlyAppointmentData();
+		});
+		function fetchMonthlyAppointmentData() {
+			fetch("http://localhost:8080/appointments/statistics")
+				.then(response => response.json())
+				.then(data => {
+					console.log("API Response:", data); // Debugging
+
+					if (!Array.isArray(data)) {
+						console.error("Unexpected data format:", data);
+						return;
+					}
+
+					const allMonths = [
+						"January", "February", "March", "April", "May", "June",
+						"July", "August", "September", "October", "November", "December"
+					];
+
+					let monthData = allMonths.reduce((acc, month) => {
+						acc[month] = 0;
+						return acc;
+					}, {});
+
+					data.forEach(entry => {
+						if (allMonths.includes(entry.monthName)) {
+							monthData[entry.monthName] = entry.appointmentCount;
+						}
+					});
+
+					console.log("Processed Months Data:", monthData); // Debugging
+
+					renderMonthlyAppointmentChart(Object.keys(monthData), Object.values(monthData));
+				})
+				.catch(error => console.error("Error fetching monthly appointment data:", error));
+		}
+
+
+
+		function renderMonthlyAppointmentChart(months, appointmentCounts) {
+			let ctx = document.getElementById("appointmentStatusChart").getContext("2d");
+
+			if (window.myChart) {
+				window.myChart.destroy(); // Destroy old chart before re-rendering
+			}
+
+			window.myChart = new Chart(ctx, {
+				type: "bar",
+				data: {
+					labels: months, // X-axis: Month names
+					datasets: [{
+						label: "Appointments Per Month",
+						data: appointmentCounts, // Y-axis: Counts
+						backgroundColor: "rgba(54, 162, 235, 0.6)",
+						borderColor: "rgba(54, 162, 235, 1)",
+						borderWidth: 1
+					}]
+				},
+				options: {
+					responsive: true,
+					scales: {
+						x: {
+							title: {
+								display: true,
+								text: "Months",
+								font: {size: 14, weight: "bold"}
+							}
+						},
+						y: {
+							beginAtZero: true,
+							title: {
+								display: true,
+								text: "Number of Appointments",
+								font: {size: 14, weight: "bold"}
+							}
+						}
+					}
+				}
+			});
+		}
+	</script>
+
+
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+			fetchOngoingAppointment();
+		});
+
+		document.addEventListener("DOMContentLoaded", function () {
+			const completeBtn = document.getElementById("completeBtn");
+			const cancelBtn = document.getElementById("cancelBtn");
+
+			if (completeBtn) {
+				completeBtn.addEventListener("click", function () {
+					updateAppointmentStatus("Completed", this);
+				});
+			} else {
+				console.error("Error: completeBtn not found in DOM!");
+			}
+
+			if (cancelBtn) {
+				cancelBtn.addEventListener("click", function () {
+					updateAppointmentStatus("Cancelled", this);
+				});
+			} else {
+				console.error("Error: cancelBtn not found in DOM!");
+			}
+		});
+
+
+		function fetchOngoingAppointment() {
+			fetch("http://localhost:8080/ongoing")
+				.then(response => {
+					if (response.status === 204) {
+						// No content available: no ongoing appointment
+						return null;
+					}
+					return response.json();
+				})
+				.then(data => {
+					if (data && data.patient && data.doctor) {
+						document.getElementById("appointmentDetails").innerHTML =
+							`Patient: ${data.patient.patientName} <br> 
+		                     Doctor: Dr. ${data.doctor.doctorName.firstName} ${data.doctor.doctorName.lastName} <br> 
+		                     Time: ${data.slot}`;
+
+						document.getElementById("completeBtn").setAttribute("data-id", data.appointmentId);
+						document.getElementById("cancelBtn").setAttribute("data-id", data.appointmentId);
+						document.getElementById("completeBtn").style.display = "inline-block";
+						document.getElementById("cancelBtn").style.display = "inline-block";
+					} else {
+						// No appointment returned
+						document.getElementById("appointmentDetails").innerHTML = "Done for today!";
+						document.getElementById("completeBtn").style.display = "none";
+						document.getElementById("cancelBtn").style.display = "none";
+					}
+				})
+				.catch(error => console.error("Error fetching ongoing appointment:", error));
+		}
+
+		function updateAppointmentStatus(status, button) {
+			let appointmentId = button.getAttribute("data-id");
+
+			if (!appointmentId) {
+				console.error("No appointment ID found!");
+				return;
+			}
+
+			let endpoint = status === "Completed" ? "complete" : "cancel";
+
+			fetch(`http://localhost:8080/${appointmentId}/${endpoint}`, {
+				method: "PUT"
+			})
+				.then(response => {
+					if (!response.ok) {
+						throw new Error("Failed to update appointment status");
+					}
+					return response.text();
+				})
+				.then(data => {
+					console.log("Appointment updated:", data);
+					fetchOngoingAppointment(); // Refresh the appointment card after update
+				})
+				.catch(error => console.error("Error updating appointment status:", error));
+		}
+
+		document.getElementById("completeBtn").addEventListener("click", function () {
+			updateAppointmentStatus("Completed", this);
+		});
+
+		document.getElementById("cancelBtn").addEventListener("click", function () {
+			updateAppointmentStatus("Cancelled", this);
+		});
+
+
+	</script>
+
+
+</head>
+
+<body>
+	<!-- Sidebar with enhanced design -->
+	<div class="sidebar">
+		<a href="/adminDashboard#" class="home-icon">
+					<img src="/img/home-icon.png" alt="Home" />
+				</a>
+		<h2>Menu</h2>
+		<ul class="menu">
+			<li><a th:href="@{/addAppointment}"><i class="fas fa-plus"></i> Book Appointment</a></li>
+			<li><a th:href="@{/viewAllAppointment}"><i class="fas fa-calendar-alt"></i> View All Appointments</a></li>
+			<li><a th:href="@{/viewAppointmentById}"><i class="fas fa-search"></i> View Appointment by ID</a></li>
+			<li><a th:href="@{/viewAppointmentsByDate}"><i class="fas fa-calendar-day"></i> View by Date</a></li>
+			<li><a th:href="@{/viewAppointmentsByDoctor}"><i class="fas fa-user-md"></i> View by Doctor</a></li>
+			<li><a th:href="@{/viewAppointmentsByPatient}"><i class="fas fa-user"></i> View by Patient</a></li>
+			<!--            <li><a th:href="@{/viewUpcomingAppointments}"><i class="fas fa-clock"></i> Upcoming Appointments</a></li>
+-->
+			<li><a th:href="@{/viewCancelledAppointments}"><i class="fas fa-times-circle"></i> Cancelled
+					Appointments</a></li>
+		</ul>
+		<div class="logout">
+			<a th:href="@{/adminDashboard}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+		</div>
+	</div>
+
+	<!-- Main Content with Dynamic Calendar -->
+	<!--<div class="main-content">
+	        <div id="calendar">
+				<p>Scheduled: <span id="scheduled-count">0</span></p>
+				<p>Rescheduled: <span id="rescheduled-count">0</span></p>
+				<p>cancelled: <span id="cancelled-count">0</span></p>
+				
+
+			</div>
+	        <div class="today-appointments" id="today-appointments">
+	            <h2>Today's Appointments</h2>
+	        </div>
+	    </div>-->
+
+	<div class="main-content">
+		<div class="top-section">
+			<div class="calendar-container" id="calendar"></div>
+			<div class="today-appointments">
+				<h2>Today's Appointments</h2>
+				<table class="appointment-table">
+					<thead>
+						<tr>
+							<th>Slot</th>
+							<th>Doctor</th>
+							<th>Patient</th>
+							<th>Reason</th>
+						</tr>
+					</thead>
+					<tbody id="today-appointments-body">
+
+					</tbody>
+				</table>
+
+			</div>
+
+
+
+		</div>
+		<div class="reports-container">
+			<div class="chart-box">
+				<h4>Appointment sceduled Report by month</h4>
+				<canvas id="appointmentStatusChart"></canvas>
+			</div>
+			<div class="chart-box">
+				<div id="ongoingAppointmentContainer" class="today-appointments">
+					<h3>Ongoing Appointment</h3>
+					<div id="ongoingAppointmentContent">
+						<p id="appointmentDetails">Loading...</p>
+						<button id="completeBtn" class="btn btn-success">Complete</button>
+						<button id="cancelBtn" class="btn btn-danger">Cancel</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+</body>
+
+</html>

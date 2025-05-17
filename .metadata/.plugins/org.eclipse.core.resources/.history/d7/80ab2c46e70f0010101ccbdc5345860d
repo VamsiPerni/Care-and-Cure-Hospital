@@ -1,0 +1,110 @@
+package com.cac.utils;
+
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+
+import com.cac.entity.PaymentEntity;
+
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.List;
+
+public class PdfReportGenerator {
+
+    public static byte[] generateReport(String title, List<PaymentEntity> transactions) {
+        try (PDDocument document = new PDDocument()) {
+            PDPage page = new PDPage(PDRectangle.A4);
+            document.addPage(page);
+
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            PDPageContentStream contentStream = new PDPageContentStream(document, page);
+
+            // Set margins and positions
+            float margin = 50;
+            float yStart = page.getMediaBox().getHeight() - margin;
+            float tableWidth = page.getMediaBox().getWidth() - 2 * margin;
+            float yPosition = yStart;
+            float bottomMargin = 70;
+            float rowHeight = 20; // Row height
+
+            // Table column headers
+            String[] headers = {"Transaction ID", "Amount Paid", "Payment Method", "Payment Status", "Transaction Date"};
+            float[] columnWidths = {100, 80, 120, 100, 120}; // Adjusted column widths
+
+            // Draw title
+            contentStream.setFont(PDType1Font.HELVETICA_BOLD, 16);
+            contentStream.beginText();
+            contentStream.newLineAtOffset(margin, yPosition);
+            contentStream.showText(title);
+            contentStream.endText();
+            yPosition -= 25; // Move down after title
+
+            // Draw table header
+            drawTableRow(contentStream, margin, yPosition, columnWidths, headers, true);
+            yPosition -= rowHeight;
+
+            // Draw table rows
+            for (PaymentEntity transaction : transactions) {
+                if (yPosition <= bottomMargin) {
+                    // Add new page when reaching the bottom
+                    contentStream.close();
+                    page = new PDPage(PDRectangle.A4);
+                    document.addPage(page);
+                    contentStream = new PDPageContentStream(document, page);
+                    yPosition = yStart;
+                }
+
+                // Convert transaction details to row data
+                String[] rowData = {
+                    String.valueOf(transaction.getTransactionId()),
+                    String.valueOf(transaction.getAmountPaid()),
+                    transaction.getPaymentMethod(),
+                    transaction.getPaymentStatus(),
+                    transaction.getTransactionDate().toString()
+                };
+
+                drawTableRow(contentStream, margin, yPosition, columnWidths, rowData, false);
+                yPosition -= rowHeight;
+            }
+
+            contentStream.close();
+            document.save(byteArrayOutputStream);
+            return byteArrayOutputStream.toByteArray();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to generate PDF report using PDFBox", e);
+        }
+    }
+
+    private static void drawTableRow(PDPageContentStream contentStream, float x, float y, float[] columnWidths, String[] rowData, boolean isHeader) throws IOException {
+        contentStream.setFont(isHeader ? PDType1Font.HELVETICA_BOLD : PDType1Font.HELVETICA, 12);
+        float nextX = x;
+        float cellHeight = 20; // Row height
+
+        for (int i = 0; i < rowData.length; i++) {
+            float cellWidth = columnWidths[i];
+
+            // Draw Cell Border (Rectangle)
+            contentStream.setLineWidth(1);
+            contentStream.moveTo(nextX, y);
+            contentStream.lineTo(nextX + cellWidth, y);
+            contentStream.lineTo(nextX + cellWidth, y - cellHeight);
+            contentStream.lineTo(nextX, y - cellHeight);
+            contentStream.lineTo(nextX, y);
+            contentStream.stroke();
+
+            // Add text inside the cell with padding
+            float textX = nextX + 5; // Left padding
+            float textY = y - 15; // Center text alignment
+            contentStream.beginText();
+            contentStream.newLineAtOffset(textX, textY);
+            contentStream.showText(rowData[i]);
+            contentStream.endText();
+
+            nextX += cellWidth;
+        }
+    }
+}

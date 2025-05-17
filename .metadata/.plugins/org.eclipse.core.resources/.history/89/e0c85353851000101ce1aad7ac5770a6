@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>View Transactions by Status</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+          body {
+            background-image: url('/images/img6.jpg');
+            background-size: cover ;
+            
+            background-position: center;
+            font-family: 'Arial', sans-serif;
+            color: #fff;
+        }
+         .myContainer{
+            background-color: rgba(0, 0, 0, 0.29);
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    width: 80%;
+    text-align: center;
+    margin-top: 50px ;
+        }
+        
+        .myTable{
+            color:rgb(249, 241, 230) ;
+             margin-top:4px ;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5 myContainer">
+        <h2>View Transactions by Status</h2>
+
+        <!-- Select Payment Status -->
+        <div class="form-group">
+            <label for="status">Select Payment Status:</label>
+            <select id="status" class="form-control">
+                <option value="Pending">Pending</option>
+                <option value="Completed">Completed</option>
+                <option value="Failed">Failed</option>
+            </select>
+        </div>
+
+        <button class="btn btn-primary" onclick="fetchTransactions()">View Transactions</button>
+
+        <hr>
+
+        <!-- Display Transactions -->
+        <h4>Transactions:</h4>
+        <table class="table table-bordered myTable">
+            <thead>
+                <tr>
+                    <th>Transaction ID</th>
+                    <th>Amount Paid</th>
+                    <th>Payment Method</th>
+                    <th>Payment Status</th>
+                </tr>
+            </thead>
+            <tbody id="transactionTableBody"></tbody>
+        </table>
+        
+        <div id="message"></div>
+
+        <div class="mt-3">
+            <a href="/homePayment" class="btn btn-secondary">Go to Home</a>
+        </div>
+    </div>
+
+    <script>
+        function fetchTransactions() {
+            let status = document.getElementById("status").value;
+
+            fetch("http://localhost:7212/viewTransactionsByStatus/" + status)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("No transactions found");
+                }
+                return response.json();
+            })
+            .then(data => {
+                let tableBody = document.getElementById("transactionTableBody");
+                tableBody.innerHTML = ""; // Clear previous results
+
+                data.forEach(transaction => {
+                    let row = `<tr>
+                        <td>${transaction.transactionId}</td>
+                        <td>${transaction.amountPaid}</td>
+                        <td>${transaction.paymentMethod}</td>
+                        <td>${transaction.paymentStatus}</td>
+                    </tr>`;
+                    tableBody.innerHTML += row;
+                });
+
+                document.getElementById("message").innerHTML = "<div class='alert alert-success'>✅ Transactions Loaded!</div>";
+            })
+            .catch(error => {
+                document.getElementById("transactionTableBody").innerHTML = "";
+                document.getElementById("message").innerHTML = "<div class='alert alert-danger'>❌ No transactions found!</div>";
+            });
+        }
+    </script>
+</body>
+</html>

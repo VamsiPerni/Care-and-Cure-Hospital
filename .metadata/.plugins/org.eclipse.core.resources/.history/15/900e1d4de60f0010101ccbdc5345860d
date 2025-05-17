@@ -1,0 +1,25 @@
+package com.cac.repository;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+import com.cac.entity.Payment;
+
+@Repository
+public interface PaymentRepository extends JpaRepository<PaymentEntity,Integer>
+{
+	List<PaymentEntity> findByPaymentMethod(String paymentMethod);
+	List<PaymentEntity> findByPaymentStatus(String paymentStatus);
+	List<PaymentEntity> findByTransactionDateBetween(LocalDateTime startDate, LocalDateTime endDate);
+	@Query("SELECT COALESCE(SUM(p.amountPaid), 0) FROM PaymentEntity p WHERE p.paymentMethod = :method AND DATE(p.transactionDate) = :date AND p.paymentStatus = 'Completed'")
+	double sumAmountByPaymentMethodAndDate(String method, LocalDate date);
+	@Query("SELECT p FROM PaymentEntity p WHERE DATE(p.transactionDate) = DATE(:date)")
+    List<PaymentEntity> findPaymentsByDate(LocalDateTime date);
+	List<PaymentEntity> findByTransactionDate(LocalDate date);
+	List<PaymentEntity> findByTransactionDateBetweenAndPaymentStatus(LocalDateTime startDate, LocalDateTime endDate, String paymentStatus);
+	
+
+}

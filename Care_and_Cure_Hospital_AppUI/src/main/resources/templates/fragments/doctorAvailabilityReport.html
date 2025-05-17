@@ -1,0 +1,140 @@
+<th:block th:fragment="content">
+    <head>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+        <link rel="stylesheet" th:href="@{/css/doctorstyle.css}">
+    </head>
+    <style>
+        .doctor-table-container {
+            width: 100%;
+            margin: 50px auto;
+            padding: 20px;
+            background: white;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s ease-in-out;
+        }
+
+        .doctor-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .doctor-table th, .doctor-table td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .doctor-table th {
+            background: #007bff; /* Blue theme for availability */
+            color: white;
+        }
+
+        .doctor-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .error-message {
+            display: none;
+            color: red;
+            margin-top: 10px;
+			text-align: center;
+        }
+    </style>
+
+    <div>
+        <h3 class="text-primary text-center">Doctor Availability Report</h3>
+        <form>
+            <label for="date">Select Date:</label>
+            <input type="date" id="date" class="form-control mb-2" required>
+        </form>
+        <div id="error-message" class="error-message"></div>
+        <button type="submit" onclick="fetchDoctorAvailabilityReport()" class="btn btn-primary w-100">Generate Report</button>
+        <div id="doctorTableContainer" class="mt-4"></div>
+    </div>
+
+    <script>
+        function fetchDoctorAvailabilityReport() {
+            let date = document.getElementById("date").value;
+            let doctorTableContainer = document.getElementById("doctorTableContainer");
+            let errorMessage = document.getElementById("error-message");
+			
+			let currentDateTime = new Date();
+			let selectedDateTime = new Date(date);
+
+            if (!date) {
+                errorMessage.textContent = "Please select a date.";
+                errorMessage.style.display = "block";
+                doctorTableContainer.innerHTML = "";
+                return;
+            }
+			if (selectedDateTime < currentDateTime) {
+				errorMessage.textContent = "Selected date must be in the future.";
+				errorMessage.style.display = "block";
+				doctorTableContainer.innerHTML = "";
+				return;
+			}
+
+            fetch(`http://localhost:8080/getDoctorAvailabilityReport?date=${date}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("No available doctors found for the selected date.");
+                    }
+                    return response.json();
+                })
+                .then(doctors => {
+                    errorMessage.style.display = "none";
+
+                    if (doctors.length === 0) {
+                        doctorTableContainer.innerHTML = `<p class='text-danger text-center'>No available doctors found for the selected date.</p>`;
+                        return;
+                    }
+
+                    let tableHTML = `
+                        <div class="doctor-table-container">
+                            <table class="doctor-table">
+                                <thead>
+									<tr>
+									   <th>ID</th>
+									   <th>Name</th>
+									   <th>Specialization</th>
+									   <th>Qualification</th>
+									   <th>Contact</th>
+									   <th>Email</th>
+									   <th>Location</th>
+									   <th>Gender</th>
+									   <th>Fee</th>
+									   <th>Experience</th>
+									</tr>
+                                </thead>
+                                <tbody>
+                                    ${doctors.map(doctor => `
+                                        <tr>
+											<td>${doctor.doctorId}</td>
+											<td>${doctor.doctorName.firstName} ${doctor.doctorName.lastName}</td>
+											<td>${doctor.specialization}</td>
+											<td>${doctor.qualification}</td>
+											<td>${doctor.contactNumber}</td>
+											<td>${doctor.emailId}</td>
+											<td>${doctor.location}</td>
+											<td>${doctor.gender}</td>
+											<td>${doctor.consultationFees}</td>
+											<td>${doctor.yearsOfExperience} years</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+
+                    doctorTableContainer.innerHTML = tableHTML;
+                })
+                .catch(error => {
+                    doctorTableContainer.innerHTML = "";
+                    errorMessage.textContent = error.message;
+                    errorMessage.style.display = "block";
+                });
+        }
+    </script>
+</th:block>

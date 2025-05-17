@@ -1,0 +1,51 @@
+# Application Info
+spring.application.name=Care_and_Cure_Hospital_App
+server.port=8080
+
+# Database Configuration (Main DB)
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.jpa.properties.hibernate.dialect= org.hibernate.dialect.MySQL8Dialect
+spring.datasource.url=jdbc:mysql://localhost:3306/Care_and_Cure?createDatabaseIfNotExist=true
+spring.datasource.username=root
+spring.datasource.password=1234
+
+# Hibernate Settings
+
+spring.jpa.generate-ddl=true
+#create #Update
+spring.jpa.hibernate.ddl-auto=update
+# Show or not log for each SQL query
+spring.jpa.show-sql=true
+
+
+# Allows Hibernate to generate SQL optimized for a particular DBMS
+# spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
+
+
+#logging.level.org.springframework=DEBUG
+# CORS Configuration
+
+
+spring.web.cors.allow-credentials=true
+spring.web.cors.allowed-origins=http://localhost:7213
+spring.web.cors.allowed-methods=GET, POST, PUT, DELETE
+spring.web.cors.allowed-headers=*
+spring.profiles.active=backend
+
+
+# SMTP Server Configuration
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username=pernisrinivasarao7@gmail.com
+spring.mail.password=jjuz sdgv lhor qvtp
+#spring.mail.protocol=smtp
+#spring.mail.smtp.auth=true
+#spring.mail.smtp.starttls.enable=true
+mail.smtp.ssl.trust=*
+
+
+# Enable TLS and Authentication
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+spring.mail.properties.mail.smtp.starttls.required=true
+

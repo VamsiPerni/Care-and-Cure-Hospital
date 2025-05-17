@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Management System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            background-color: #f0f0f0;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e90ff, #00bfff);
+            width: 100%;
+            padding: 60px 0;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            color: white;
+            font-family: 'Poppins', serif;
+            font-size: 48px;
+            font-weight: 700;
+            margin: 0;
+            letter-spacing: 1.5px;
+        }
+
+        header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 18px;
+            margin-top: 10px;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .feature-box {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1e90ff, #00bfff);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 1;
+        }
+
+        .feature-box:hover::before {
+            opacity: 1;
+        }
+
+        .feature-box:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .feature-box:hover .icon,
+        .feature-box:hover .title,
+        .feature-box:hover .description {
+            color: white;
+            z-index: 2;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: #007bff;
+            transition: color 0.3s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        .title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #007bff;
+            margin-bottom: 10px;
+            transition: color 0.3s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        .description {
+            font-size: 16px;
+            color: #666;
+            transition: color 0.3s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        footer {
+            margin-top: 60px;
+            padding: 20px;
+            width: 100%;
+            text-align: center;
+            background: linear-gradient(135deg, #1e90ff, #00bfff);
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <header>
+    <h1>
+        <a href="/adminDashboard" style="color: white; text-decoration: none;">
+            <i class="fas fa-home" style="margin-right: 10px;"></i>
+            Patient Management System
+        </a>
+    </h1>
+    <p>Select an option below to manage patients</p>
+</header>
+    <div class="grid-container">
+        <div class="feature-box">
+            <div class="icon"><i class="fas fa-user-plus"></i></div>
+          <!--  <div class="title"><a th:href="@{/ui/patients/add}">Register New Patient</a></div> -->
+            <div class="description">Add a new patient to the system.</div>
+        </div>
+        <div class="feature-box">
+            <div class="icon"><i class="fas fa-edit"></i></div>
+            <div class="title"><a th:href="@{/ui/patients/enterId}">Update Patient</a></div>
+            <div class="description">Modify patient details.</div>
+        </div>
+        <div class="feature-box">
+            <div class="icon"><i class="fas fa-id-badge"></i></div>
+            <div class="title"><a th:href="@{/ui/patients/enterPatientId}">View Patient Details</a></div>
+            <div class="description">Search patients by ID.</div>
+        </div>
+        <div class="feature-box">
+            <div class="icon"><i class="fas fa-users"></i></div>
+            <div class="title"><a th:href="@{/ui/patients/all}">View All Patients</a></div>
+            <div class="description">List of all patients.</div>
+        </div>
+        <div class="feature-box">
+            <div class="icon"><i class="fas fa-user-check"></i></div>
+            <div class="title"><a th:href="@{/ui/patients/status/active}">View Active Patients</a></div>
+            <div class="description">Patients currently active.</div>
+        </div>
+        <div class="feature-box">
+            <div class="icon"><i class="fas fa-user-times"></i></div>
+            <div class="title"><a th:href="@{/ui/patients/status/inactive}">View Inactive Patients</a></div>
+            <div class="description">Patients marked as inactive.</div>
+        </div>
+        <div class="feature-box">
+            <div class="icon"><i class="fas fa-calendar-day"></i></div>
+            <div class="title"><a th:href="@{/ui/patients/report/dailyAppointments}">Daily Appointment Report</a></div>
+            <div class="description">View today's appointments.</div>
+        </div>
+        <div class="feature-box">
+            <div class="icon"><i class="fas fa-ban"></i></div>
+            <div class="title"><a th:href="@{/ui/patients/report/noShows}">No-Show Report</a></div>
+            <div class="description">Report of missed appointments.</div>
+        </div>
+        <div class="feature-box">
+            <div class="icon"><i class="fas fa-notes-medical"></i></div>
+            <div class="title"><a th:href="@{/ui/patients/report/healthIssue}">Patients by Health Issue</a></div>
+            <div class="description">Filter patients by condition.</div>
+        </div>
+        <div class="feature-box">
+            <div class="icon"><i class="fas fa-sign-out-alt"></i></div>
+            <div class="title"><a href="/">Logout</a></div>
+            <div class="description">Exit the system.</div>
+        </div>
+    </div>
+    <footer>
+        &copy; 2025 Patient Management System. All rights reserved.
+    </footer>
+</body>
+</html>

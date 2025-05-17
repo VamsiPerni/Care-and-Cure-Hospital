@@ -1,0 +1,84 @@
+package com.cac.controller;
+
+import com.cac.entity.Payment;
+import com.cac.service.EmailService;
+import com.cac.service.PaymentService;
+import com.cac.utils.PdfReportGenerator;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/reports")
+public class AdminReportController {
+
+    private final EmailService emailService;
+    private final PaymentService paymentService;
+
+    // Fixed list of admin emails
+    private static final List<String> ADMIN_EMAILS = Arrays.asList(
+        "mohanperni777@gmail.com"
+        // Add more admin emails here if needed
+    );
+
+    public AdminReportController(EmailService emailService, PaymentService paymentService) {
+        this.emailService = emailService;
+        this.paymentService = paymentService;
+    }
+
+    @GetMapping("/admin-emails")
+    public List<String> getAdminEmails() {
+        return ADMIN_EMAILS;
+    }
+
+    @PostMapping("/send")
+    public String sendReportEmail(@RequestParam String reportType, @RequestBody List<String> toEmails) {
+        // Fetch all transactions
+        List<PaymentEntity> transactions = paymentService.viewAllTransactions();
+
+        // Generate the PDF report
+        byte[] pdfReport = PdfReportGenerator.generateReport("Transaction Report", transactions);
+
+        // Send the report to selected admin emails
+        for (String adminEmail : toEmails) {
+            emailService.sendReportWithAttachment(adminEmail, reportType, pdfReport);
+        }
+
+        return "Report email sent successfully to selected admins.";
+    }
+
+    private String generateReportContent(String reportType) {
+        switch (reportType.toLowerCase()) {
+            case "paymenthistory":
+                return "Detailed payment history report...";
+            case "dailypaymentsummary":
+                return "Daily summary of all payments...";
+            case "paymentmethodanalysis":
+                return "Analysis of different payment methods...";
+            case "alltransactions":
+                return formatAllTransactions(paymentService.viewAllTransactions()); // Format all transactions
+            default:
+                return "Unknown report type.";
+        }
+    }
+
+    private String formatAllTransactions(List<PaymentEntity> transactions) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Transaction Report\n\n");
+        sb.append(String.format("%-15s %-15s %-20s %-20s %-20s\n", 
+                "Transaction ID", "Amount Paid", "Payment Method", "Payment Status", "Transaction Date"));
+        sb.append("----------------------------------------------------------------------------------------\n");
+
+        for (PaymentEntity transaction : transactions) {
+            sb.append(String.format("%-15d %-15.2f %-20s %-20s %-20s\n",
+                    transaction.getTransactionId(),
+                    transaction.getAmountPaid(),
+                    transaction.getPaymentMethod(),
+                    transaction.getPaymentStatus(),
+                    transaction.getTransactionDate()));
+        }
+
+        return sb.toString();
+    }
+}

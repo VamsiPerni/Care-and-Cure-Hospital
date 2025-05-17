@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<title>Billing Management - Care and Cure</title>
+	    <script src="https://cdn.tailwindcss.com"></script>
+	    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.1/flowbite.min.js"></script>
+	    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.1/flowbite.min.css" rel="stylesheet" />
+	    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@404;500;700&display=swap" rel="stylesheet">
+	    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+	    
+   <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+            overflow: hidden;
+            background: #f4f7f6 url('/images/addbill-bg.png') repeat; /* Consistent background */
+            background-size: cover;
+        }
+
+        .sidebar {
+            background: #FFFFFF; /* White background */
+            color: #007BFF; /* Blue text */
+            width: 250px;
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            overflow-y: auto; /* Enable vertical scrolling */
+        }
+        .sidebar h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #007BFF; /* Blue text */
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            margin-bottom: 15px;
+        }
+        .sidebar ul li a {
+            color: #007BFF; /* Blue text */
+            text-decoration: none;
+            font-size: 18px;
+            display: block;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background 0.3s, color 0.3s;
+            display: flex; /* For aligning arrow */
+            justify-content: space-between; /* For aligning arrow */
+            align-items: center; /* For aligning arrow */
+        }
+        .sidebar ul li a:hover {
+            background: #007BFF; /* Blue background */
+            color: #FFFFFF; /* White text */
+        }
+        .sidebar ul li ul {
+            margin-left: 20px;
+            display: none;
+        }
+        .sidebar ul li:hover ul {
+            display: block;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            background: #f9f9f9;
+            position: relative;
+            overflow: hidden;
+            margin-left: 250px; /* Adjust margin to accommodate sidebar */
+        }
+
+        /* Keep existing main-content styles */
+        .heading-section {
+            background: rgba(0, 0, 0, 0.5) url('/images/billhome.jpg') no-repeat center center; /* Increased opacity for darker bg */
+            background-size: cover;
+            color: #fff;
+            border-radius: 15px;
+            text-align: center;
+            padding: 80px 40px;
+            margin-bottom: 40px;
+            background-blend-mode: multiply;
+            backdrop-filter: blur(20px);
+			background-blend-mode: darken;
+            position: relative;
+			z-index: 1;
+        }
+
+        .heading-section::before,
+        .heading-section::after {
+            content: '';
+            position: absolute;
+            background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23ffffff" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus-circle"%3E%3Ccircle cx="12" cy="12" r="10"/%3E%3Cline x1="12" y1="8" x2="12" y2="16"/%3E%3Cline x1="8" y1="12" x2="16" y2="12"/%3E%3C/svg%3E');
+            background-size: 30px;
+            width: 30px;
+            height: 30px;
+            opacity: 0.4;
+        }
+
+        .heading-section::before {
+            top: 20px;
+            left: 20px;
+        }
+
+        .heading-section::after {
+            bottom: 20px;
+            right: 20px;
+        }
+
+        .heading-section h1 {
+            margin-bottom: 25px;
+            font-size: 3em;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .heading-section p {
+            font-size: 1.2em;
+            line-height: 1.7;
+        }
+
+        .home_container {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #007BFF, #66a3ff);
+            color: white;
+            padding: 50px 35px;
+            border-radius: 20px;
+            text-align: center;
+            width: 320px;
+            font-size: 1.3em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            animation: float 3s ease-in-out infinite;
+			z-index: 1;
+        }
+
+        .card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .card a {
+            color: white;
+            text-decoration: none;
+        }
+
+        /* Floating elements */
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0); }
+        }
+
+        
+    </style>
+</head>
+<body>
+
+	<div class="sidebar">
+	        <h2>Care and Cure</h2>
+	        <ul>
+				<li><a href="/adminDashboard" >Home</a></li>
+			   <li><a href="/docHome" >Doctor</a></li>
+	            <li><a href="/appHome" >Appointment</a></li>
+	            <li><a href="/ui/patients/" >Patient</a></li>			
+	   			<li><a href="/homePayment">Payment</a></li>
+				<li>
+				    <a href="/billing/billHome" onclick="handleBillingClick(event, this);">
+				        Billing
+				    </a>
+				    <ul id="billingDropdown">
+				        <li><a th:href="@{/billing/addNewBill}">Add Bill</a></li>
+				        <li><a th:href="@{/billing/updateBill}">Update Bill</a></li>
+				        <li><a th:href="@{/billing/viewTransaction}">View Bills</a></li>
+				    </ul>
+				</li>
+
+	            <!--<li>
+	                <a href="#" onclick="toggleDropdown('ambulanceDropdown', this);">
+	                    Ambulance
+	                </a>
+	                <ul id="ambulanceDropdown">
+	                    <li><a href="#" onclick="showAmbulanceList()">Ambulance List</a></li>
+	                    <li><a href="#" onclick="showAddAmbulance()">Add Ambulance</a></li>
+	                    <li><a href="#" onclick="showEditAmbulance()">Edit Ambulance</a></li>
+	                </ul>
+	            </li>
+
+	            <li>
+	                <a href="#" onclick="toggleDropdown('departmentDropdown', this);">
+	                    Department
+	                </a>
+	                <ul id="departmentDropdown">
+	                    <li><a href="#" onclick="showDepartmentList()">Department List</a></li>
+	                    <li><a href="#" onclick="showAddDepartment()">Add Department</a></li>
+	                    <li><a href="#" onclick="showEditDepartment()">Edit Department</a></li>
+	                </ul>
+	            </li>-->
+	        </ul>
+	    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebarLinks = document.querySelectorAll('.sidebar ul li a');
+
+            sidebarLinks.forEach(link => {
+                if (link.nextElementSibling && link.nextElementSibling.tagName === 'UL') {
+                    link.addEventListener('click', function(event) {
+                        event.preventDefault();
+                        const submenu = this.nextElementSibling;
+                        submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
+                        this.querySelector('.arrow').classList.toggle('rotate');
+                    });
+                } else if (this.getAttribute('href') === window.location.pathname) {
+                    this.classList.add('active'); // Basic active class if needed
+                }
+            });
+        });
+
+        function toggleDropdown(id, element) {
+            var dropdown = document.getElementById(id);
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+            element.querySelector('.arrow').classList.toggle('rotate');
+        }
+
+        function handleBillingClick(event, element) {
+            if (!event.target.classList.contains('arrow')) {
+                window.location.href = "/billing/billHome";
+            } else {
+                event.preventDefault();
+                toggleDropdown('billingDropdown', element);
+            }
+        }
+    </script>
+
+    <div class="main-content">
+		<div class="heading-section">
+		            <h1>Billing Section</h1>
+		            <p>Efficiently manage patient billing with detailed bill generation, and convenient email receipts.</p>
+					<p style="color: blanchedalmond;">Applied medicine discounts for bills over ₹1000.</p>
+					<p>Simplify your billing process today.</p>
+
+		        </div>
+
+        <div class="home_container">
+            <div class="card">
+                <a th:href="@{/billing/addNewBill}">Add New Bill</a>
+            </div>
+            <div class="card">
+                <a th:href="@{/billing/updateBill}">Update Bill</a>
+            </div>
+            <div class="card">
+                <a th:href="@{/billing/viewTransaction}">View All Bills</a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

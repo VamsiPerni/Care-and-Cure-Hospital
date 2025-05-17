@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .login-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 380px;
+            text-align: center;
+        }
+
+        .login-container h2 {
+            color: #007BFF;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            position: relative;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .input-group input:focus {
+            border-color: #007BFF;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.2);
+        }
+
+        .input-group .eye-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #007BFF;
+            font-size: 18px;
+        }
+
+        .login-container button {
+            width: 100%;
+            padding: 12px;
+            background: #007BFF;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .login-container button:hover {
+            background: #0056b3;
+        }
+
+        .error-message {
+            color: red;
+            margin-bottom: 10px;
+            display: none;
+        }
+
+        .forgot-password {
+            display: block;
+            margin-top: 10px;
+            color: #007BFF;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Login</h2>
+
+        <!-- Error Message -->
+        <div class="error-message" th:if="${error}" th:text="${error}"></div>
+
+        <form id="loginForm" action="/mainLoginPage" method="post">
+            <div class="input-group">
+                <input type="text" name="username" id="username" placeholder="Enter Username or Email" required>
+            </div>
+
+            <div class="input-group">
+                <input type="password" name="password" id="password" placeholder="Password" required>
+                <i class="bi bi-eye-slash eye-icon" id="togglePassword"></i>
+            </div>
+
+            <button type="button" onclick="validateLogin()">Login</button>
+        </form>
+
+        <a href="#" class="forgot-password">Forgot Password?</a>
+    </div>
+
+    <script>
+        // Toggle password visibility
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const passwordField = document.getElementById('password');
+            const icon = this;
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                icon.classList.remove("bi-eye-slash");
+                icon.classList.add("bi-eye");
+            } else {
+                passwordField.type = "password";
+                icon.classList.remove("bi-eye");
+                icon.classList.add("bi-eye-slash");
+            }
+        });
+
+        function validateLogin() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const errorMessage = document.querySelector(".error-message");
+
+            if (username === "" || password === "") {
+                errorMessage.textContent = "Username and Password are required.";
+                errorMessage.style.display = "block";
+                return;
+            }
+
+            // Admin Login
+            if (username.match(/^admin\d+$/) && password === "admin123") {
+                document.getElementById('loginForm').submit();
+                return;
+            }
+
+            // Doctor Login (122XXXXX)
+            if (username.match(/^125\d+$/) && password === "doctorPass") {
+                document.getElementById('loginForm').submit();
+                return;
+            }
+
+            // Patient Login (Email-based)
+            if (username.includes("@") && username.includes(".") && password === "patientPass") {
+                document.getElementById('loginForm').submit();
+                return;
+            }
+
+            errorMessage.textContent = "Invalid username or password.";
+            errorMessage.style.display = "block";
+        }
+    </script>
+</body>
+</html>

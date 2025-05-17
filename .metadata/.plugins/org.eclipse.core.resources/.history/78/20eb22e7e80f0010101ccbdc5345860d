@@ -1,0 +1,33 @@
+package com.cac.ui.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+@Controller
+public class MainLoginUIController
+{
+
+    @GetMapping("/mainLoginPage")
+    public String login() {
+        return "mainLoginPage"; // Displays the login page
+    }
+
+    @PostMapping("/mainLoginPage")
+    public String handleLogin(
+            @RequestParam String username,
+            @RequestParam String password) {
+        
+        // Add your login validation logic here
+        // For now, assume login is successful
+        System.out.println("Username: " + username);
+        System.out.println("Password: " + password);
+
+        // Redirect to the dashboard page
+        return "redirect:/adminDashboard";
+    }
+    
+}
+
+

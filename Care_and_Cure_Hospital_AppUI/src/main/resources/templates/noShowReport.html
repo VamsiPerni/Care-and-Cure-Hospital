@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Reports</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f0f8ff;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+
+        .header {
+            font-size: 28px;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(to right, #007bff, #0056b3);
+            padding: 15px;
+            width: 100%;
+            text-align: center;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            width: 80%;
+            flex-grow: 1;
+        }
+
+        .card {
+            background: #e6f0ff;
+            color: black;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            margin-top: 10px;
+            text-align: left;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input {
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+
+        .btn-warning {
+            background-color: #ffc107;
+            border-color: #ffc107;
+        }
+
+        .btn-dark {
+            background-color: #343a40;
+            border-color: #343a40;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Reports</h2>
+    </div>
+    <div class="container">
+        <div class="card mt-4">
+            <h4>No-Show Report</h4>
+            <form th:action="@{/ui/patients/report/noShows}" method="get">
+                <div class="form-group">
+                    <label>Start Date</label>
+                    <input type="date" name="startDate" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>End Date</label>
+                    <input type="date" name="endDate" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-warning">Generate Report</button>
+            </form>
+            <p th:if="${noShowReport}" class="alert alert-warning" th:text="${noShowReport}"></p>
+        </div>
+        <a th:href="@{/ui/patients/}" class="btn btn-secondary mt-3">Back to Home</a>
+    </div>
+</body>
+</html>
+

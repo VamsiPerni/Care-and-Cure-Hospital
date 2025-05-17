@@ -1,0 +1,63 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container {
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 30px;
+    color: #333;
+}
+
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+.card {
+    padding: 30px 50px;
+    border-radius: 20px;
+    text-decoration: none;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    transition: transform 0.3s, box-shadow 0.3s;
+    width: 250px;
+    text-align: center;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
+
+.card-blue {
+    background: linear-gradient(45deg, #2193b0, #6dd5ed);
+}
+
+.card-green {
+    background: linear-gradient(45deg, #56ab2f, #a8e063);
+}
+
+.card-orange {
+    background: linear-gradient(45deg, #ff8008, #ffc837);
+}
+
+.card-red {
+    background: linear-gradient(45deg, #e52d27, #b31217);
+}
+
+.card-purple {
+    background: linear-gradient(45deg, #7b4397, #dc2430);
+}

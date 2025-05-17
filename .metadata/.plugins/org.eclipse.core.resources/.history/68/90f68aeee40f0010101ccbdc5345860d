@@ -1,0 +1,106 @@
+package com.cac.dto;
+
+import java.time.LocalDate;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class BillDTO {
+    private int billId;
+    private LocalDate billDate;
+    private double consultationFees;
+    private double medicineFees;
+    private double testCharges;
+    private double miscellaneousCharge;
+    private String description;
+    private boolean isInsuranceApplicable;
+    private float discountPercentage;
+    private boolean tax;
+    private double totalAmount;
+    private String paymentStatus; // From PaymentEntity
+    private AppointmentDTO appObj;
+	public int getBillId() {
+		return billId;
+	}
+	public void setBillId(int billId) {
+		this.billId = billId;
+	}
+	public LocalDate getBillDate() {
+		return billDate;
+	}
+	public void setBillDate(LocalDate billDate) {
+		this.billDate = billDate;
+	}
+	public double getConsultationFees() {
+		return consultationFees;
+	}
+	public void setConsultationFees(double consultationFees) {
+		this.consultationFees = consultationFees;
+	}
+	public double getMedicineFees() {
+		return medicineFees;
+	}
+	public void setMedicineFees(double medicineFees) {
+		this.medicineFees = medicineFees;
+	}
+	public double getTestCharges() {
+		return testCharges;
+	}
+	public void setTestCharges(double testCharges) {
+		this.testCharges = testCharges;
+	}
+	public double getMiscellaneousCharge() {
+		return miscellaneousCharge;
+	}
+	public void setMiscellaneousCharge(double miscellaneousCharge) {
+		this.miscellaneousCharge = miscellaneousCharge;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	public boolean isInsuranceApplicable() {
+		return isInsuranceApplicable;
+	}
+	public void setInsuranceApplicable(boolean isInsuranceApplicable) {
+		this.isInsuranceApplicable = isInsuranceApplicable;
+	}
+	public float getDiscountPercentage() {
+		return discountPercentage;
+	}
+	public void setDiscountPercentage(float discountPercentage) {
+		this.discountPercentage = discountPercentage;
+	}
+	public boolean isTax() {
+		return tax;
+	}
+	public void setTax(boolean tax) {
+		this.tax = tax;
+	}
+	public double getTotalAmount() {
+		return totalAmount;
+	}
+	public void setTotalAmount(double totalAmount) {
+		this.totalAmount = totalAmount;
+	}
+	public String getPaymentStatus() {
+		return paymentStatus;
+	}
+	public void setPaymentStatus(String paymentStatus) {
+		this.paymentStatus = paymentStatus;
+	}
+	public AppointmentDTO getAppObj() {
+		return appObj;
+	}
+	public void setAppObj(AppointmentDTO appObj) {
+		this.appObj = appObj;
+	}
+    
+    
+}

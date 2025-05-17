@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Doctor Management System</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+	<link rel="stylesheet" th:href="@{/css/doctorstyle.css}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a th:href="@{/addDoctor}" class="nav-link">
+                    <i class="fas fa-user-plus"></i>
+                    <span class="nav-text">Add Doctor</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:href="@{/updateDoctorForm}" class="nav-link">
+                    <i class="fas fa-edit"></i>
+                    <span class="nav-text">Update Doctor</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:href="@{/viewDoctorById}" class="nav-link">
+                    <i class="fas fa-search"></i>
+                    <span class="nav-text">View by ID</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:href="@{/viewDoctorBySpecialization}" class="nav-link">
+                    <i class="fas fa-stethoscope"></i>
+                    <span class="nav-text">By Specialization</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:href="@{/viewAllDoctors}" class="nav-link">
+                    <i class="fas fa-users"></i>
+                    <span class="nav-text">All Doctors</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:href="@{/viewAllActiveDoctors}" class="nav-link">
+                    <i class="fas fa-user-check"></i>
+                    <span class="nav-text">Active Doctors</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:href="@{/viewDoctorBySlotAvailability}" class="nav-link">
+                    <i class="fas fa-clock"></i>
+                    <span class="nav-text">Slot Availability</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:href="@{/viewDoctorByDayAvailability}" class="nav-link">
+                    <i class="fas fa-calendar-check"></i>
+                    <span class="nav-text">Day Availability</span>
+                </a>
+            </li>
+			<li class="nav-item">
+			     <a th:href="@{/deactivateDoctorForm}" class="nav-link">
+			          <i class="fas fa-ban"></i>
+			          <span class="nav-text">Deactivate Doctor</span>
+			     </a>
+			</li>
+            <li class="nav-item">
+                <a th:href="@{/viewByConsultationCountForm}" class="nav-link">
+                    <i class="fas fa-chart-line"></i>
+                    <span class="nav-text">By Consultation Count</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:href="@{/doctorRevenueReportForm}" class="nav-link">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span class="nav-text">Doctor revenue</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:href="@{/lowConsultationReportForm}" class="nav-link">
+                    <i class="fas fa-user-minus"></i>
+                    <span class="nav-text">Low consultation</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:href="@{/frequentlyBookedDoctorsReportForm}" class="nav-link">
+                    <i class="fas fa-user-check"></i>
+                    <span class="nav-text">Frequently Booked</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a th:href="@{/doctorAvailabilityReportForm}" class="nav-link">
+                    <i class="fas fa-calendar-check"></i>
+                    <span class="nav-text">Doctor Availability</span>
+                </a>
+            </li>
+			<li class="nav-item">
+			    <a th:href="@{/doctorAppointmentReportForm}" class="nav-link">
+			         <i class="fas fa-file-invoice"></i>
+			         <span class="nav-text">Doctor Appointments</span>
+			    </a>
+			</li>
+        </ul>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+		<div class="main-header">
+			<div class="header-icons d-flex gap-2">
+			    <a th:href="@{/adminDashboard}" class="icon-link box-link">
+			        <i class="fas fa-home"></i>
+			        <span class="icon-text">Home</span>
+			    </a>
+			    <a th:href="@{/mainLoginPage}" class="icon-link box-link">
+			        <i class="fas fa-sign-out-alt"></i>
+			        <span class="icon-text">Logout</span>
+			    </a>
+			</div>
+		        </div>
+        <div class="content-container" th:insert="~{fragments/docHome :: content}">
+        </div>
+    </main>
+
+    <!-- Dynamic Content Loading Script -->
+    <script>
+		$(document).ready(function () {
+		    $(document).on("click", ".nav-link", function (e) {
+		        e.preventDefault();
+		        let url = $(this).attr("href"); 
+		        loadFragment(url);
+		    });
+
+		    function loadFragment(url) {
+		        $.ajax({
+		            url: url,
+		            type: "GET",
+		            success: function (response) {
+		                $(".content-container").html(response); // Inject fetched content
+		            },
+		            error: function (xhr) {
+		                console.error("Error loading fragment:", xhr.statusText);
+		                $(".content-container").html('<div class="error">Error loading content.</div>');
+		            }
+		        });
+		    }
+		});
+    </script>
+</body>
+</html>

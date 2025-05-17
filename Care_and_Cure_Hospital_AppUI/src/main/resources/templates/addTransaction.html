@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Add New Transaction</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4895ef;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --success-color: #4cc9f0;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--dark-color);
+        }
+        
+        .transaction-card {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 600px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .transaction-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+        
+        .card-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 25px;
+            text-align: center;
+            border-bottom: none;
+        }
+        
+        .card-header h2 {
+            font-weight: 600;
+            margin: 0;
+            font-size: 28px;
+        }
+        
+        .card-header i {
+            font-size: 40px;
+            margin-bottom: 15px;
+            color: white;
+        }
+        
+        .card-body {
+            padding: 30px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        .form-group label {
+            font-weight: 500;
+            margin-bottom: 8px;
+            display: block;
+            color: var(--dark-color);
+        }
+        
+        .form-control {
+            height: 50px;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            font-size: 16px;
+            padding-left: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.25);
+        }
+        
+        .input-icon {
+            position: absolute;
+            right: 15px;
+            top: 38px;
+            color: #6c757d;
+        }
+        
+        .btn-submit {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            color: white;
+            padding: 12px;
+            font-size: 18px;
+            font-weight: 500;
+            border-radius: 8px;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .btn-submit:hover {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            transform: translateY(-2px);
+        }
+        
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+        
+        .home-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .home-link:hover {
+            color: var(--secondary-color);
+            text-decoration: underline;
+        }
+        
+        .alert-success {
+            background-color: rgba(76, 201, 240, 0.15);
+            border-color: rgba(76, 201, 240, 0.3);
+            color: #0a9396;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        /* Payment method icons */
+        .payment-method-icon {
+            position: absolute;
+            right: 15px;
+            top: 38px;
+            font-size: 20px;
+        }
+        
+        /* Animation for form elements */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .form-group {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        .form-group:nth-child(1) { animation-delay: 0.1s; }
+        .form-group:nth-child(2) { animation-delay: 0.2s; }
+        .form-group:nth-child(3) { animation-delay: 0.3s; }
+        .btn-submit { animation: fadeIn 0.5s ease 0.4s forwards; opacity: 0; }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .transaction-card {
+                margin: 20px;
+                width: 90%;
+            }
+            
+            .card-header h2 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="transaction-card">
+        <div class="card-header">
+            <i class="fas fa-credit-card"></i>
+            <h2>Add New Transaction</h2>
+        </div>
+        
+        <div class="card-body">
+            <form th:action="@{/addTransaction}" th:object="${payment}" method="post">
+                <div class="form-group">
+                    <label for="amountPaid">Amount (₹)</label>
+                    <input type="number" class="form-control" id="amountPaid" name="amountPaid" 
+                           th:field="*{amountPaid}" step="0.01" min="1" required
+                           placeholder="Enter payment amount">
+                    <i class="fas fa-rupee-sign input-icon"></i>
+                </div>
+                
+                <div class="form-group">
+                    <label for="paymentMethod">Payment Method</label>
+                    <select class="form-control" id="paymentMethod" name="paymentMethod" 
+                            th:field="*{paymentMethod}" required>
+                        <option value="" disabled selected>Select payment method</option>
+                        <option value="Credit Card">Credit Card</option>
+                        <option value="Debit Card">Debit Card</option>
+                        <option value="UPI">UPI</option>
+                        <option value="Cash">Cash</option>
+                    </select>
+                    <i class="fas fa-wallet payment-method-icon"></i>
+                </div>
+                
+                <div class="form-group">
+                    <label for="paymentStatus">Payment Status</label>
+                    <select class="form-control" id="paymentStatus" name="paymentStatus" 
+                            th:field="*{paymentStatus}" required>
+                        <option value="" disabled selected>Select payment status</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Failed">Failed</option>
+                    </select>
+                    <i class="fas fa-info-circle payment-method-icon"></i>
+                </div>
+                
+                <button type="submit" class="btn btn-submit">
+                    <i class="fas fa-paper-plane mr-2"></i> Process Transaction
+                </button>
+            </form>
+            
+            <a th:href="@{/homePayment}" class="home-link">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Dashboard
+            </a>
+            
+            <div th:if="${message}" class="alert alert-success mt-4">
+                <i class="fas fa-check-circle mr-2"></i>
+                <span th:text="${message}"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add dynamic class based on payment method selection
+        document.getElementById('paymentMethod').addEventListener('change', function() {
+            const icon = document.querySelector('.payment-method-icon');
+            switch(this.value) {
+                case 'Credit Card':
+                    icon.className = 'fas fa-credit-card payment-method-icon';
+                    break;
+                case 'Debit Card':
+                    icon.className = 'fas fa-credit-card payment-method-icon';
+                    break;
+                case 'UPI':
+                    icon.className = 'fas fa-mobile-alt payment-method-icon';
+                    break;
+                case 'Cash':
+                    icon.className = 'fas fa-money-bill-wave payment-method-icon';
+                    break;
+                default:
+                    icon.className = 'fas fa-wallet payment-method-icon';
+            }
+        });
+        
+        // Add animation when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const formGroups = document.querySelectorAll('.form-group');
+            formGroups.forEach((group, index) => {
+                group.style.animationDelay = `${0.1 * index}s`;
+            });
+        });
+    </script>
+</body>
+</html>

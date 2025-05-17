@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Patient Profile</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f0f8ff;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .header {
+            font-size: 28px;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(to right, #007bff, #0056b3);
+            padding: 15px;
+            width: 100%;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 2px solid #0056b3;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            width: 80%;
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        .card {
+            background: #e6f0ff;
+            color: black;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            margin-top: 10px;
+            text-align: left;
+        }
+
+        table {
+            margin-top: 20px;
+            background-color: white;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            width: 100%;
+        }
+
+        table th, table td {
+            padding: 12px;
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+		.error{
+			color : red;
+		}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Patient Profile</h2>
+    </div>
+    <div class="container">
+        <div th:if="${patient}" class="card">
+            <table class="table table-bordered">
+                <tr><th>ID</th><td th:text="${patient.patientId}"></td></tr>
+                <tr><th>Name</th><td th:text="${patient.patientName}"></td></tr>
+                <tr><th>Contact</th><td th:text="${patient.contactNumber}"></td></tr>
+                <tr><th>Email</th><td th:text="${patient.emailId}"></td></tr>
+                <tr><th>Location</th><td th:text="${patient.location}"></td></tr>
+                <tr><th>Date of Birth</th><td th:text="${patient.dateOfBirth}"></td></tr>
+                <tr><th>Gender</th><td th:text="${patient.gender}"></td></tr>
+                <tr><th>Allergies</th><td th:text="${patient.allergies}"></td></tr>
+                <tr><th>Medications</th><td th:text="${patient.medications}"></td></tr>
+                <tr><th>Treatments</th><td th:text="${patient.treatments}"></td></tr>
+                <tr><th>Medical History</th><td th:text="${patient.medicalHistory}"></td></tr>
+                <tr><th>Doctor ID</th><td th:text="${patient.doctorId}"></td></tr>
+                <tr><th>Status</th><td th:text="${patient.status ? 'Active' : 'Inactive'}"></td></tr>
+            </table>
+        </div>
+		
+		<!-- Error Message -->
+		        <div th:if="${error}" class="error">
+		            <p th:text="${error}"></p>
+		        </div>
+        <a th:href="@{/ui/patients/}" class="btn btn-secondary mt-3">Back to Home</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>View Bills</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.1/flowbite.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.1/flowbite.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@404;500;700&display=swap" rel="stylesheet">
+  <style>
+	html, body {
+		    height: 100%; /* Ensure full height for scrolling */
+		    margin: 0;
+		    overflow: hidden; /* Prevent body scrollbar */
+		}
+	body {
+	        font-family: 'Poppins', sans-serif;
+	        margin: 0;
+	        display: flex;
+	        min-height: 100vh;
+	        overflow: hidden;
+	        background: #F0F0F0 url('/images/addbill-bg.png') repeat; /* Keep your background */
+	        background-size: cover;
+	    }
+
+	    .sidebar {
+	        background: #FFFFFF; /* White background */
+	        color: #007BFF; /* Blue text */
+	        width: 250px;
+	        padding: 20px;
+	        position: fixed;
+	        height: 100vh;
+	        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+	        overflow-y: auto; /* Enable vertical scrolling */
+	    }
+	    .sidebar h2 {
+	        margin-bottom: 20px;
+	        font-size: 24px;
+	        color: #007BFF; /* Blue text */
+	    }
+	    .sidebar ul {
+	        list-style: none;
+	        padding: 0;
+	    }
+	    .sidebar ul li {
+	        margin-bottom: 15px;
+	    }
+	    .sidebar ul li a {
+	        color: #007BFF; /* Blue text */
+	        text-decoration: none;
+	        font-size: 18px;
+	        display: block;
+	        padding: 10px;
+	        border-radius: 5px;
+	        transition: background 0.3s, color 0.3s;
+	        display: flex; /* For aligning arrow */
+	        justify-content: space-between; /* For aligning arrow */
+	        align-items: center; /* For aligning arrow */
+	    }
+	    .sidebar ul li a:hover {
+	        background: #007BFF; /* Blue background */
+	        color: #FFFFFF; /* White text */
+	    }
+	    .sidebar ul li ul {
+	        margin-left: 20px;
+	        display: none;
+	    }
+	    .sidebar ul li:hover ul {
+	        display: block;
+	    }
+
+		@keyframes gradientAnimation {
+				    0% { background-position: 0% 50%; }
+				    50% { background-position: 100% 50%; }
+				    100% { background-position: 0% 50%; }
+				}
+	    .main-content {
+	        flex: 1;
+	        padding: 40px;
+	        background: rgba(249, 249, 249, 0.9);
+			
+	        position: relative;
+	        overflow-y: auto;
+	        overflow-x: hidden;
+	        z-index: 1;
+			background: linear-gradient(-45deg, #85d4ff, #e0faff, rgb(184, 224, 254), rgb(108, 179, 255));
+						background-size: 400% 400%;
+						animation: gradientAnimation 10s ease infinite;
+					    
+	        margin-left: 250px; /* Adjust margin for sidebar width */
+	    }
+
+
+    /* Enhanced UI Styles */
+    .bill-container {
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+      width: 90%;
+      max-width: 1200px;
+      margin: 3% auto;
+    }
+
+    h1 {
+      text-align: left;
+      color: #333;
+      margin-bottom: 25px;
+      font-size: 1.8rem;
+      font-weight: 600;
+    }
+
+    .filter-section {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      gap: 15px;
+    }
+
+    .filter-section select, .filter-section input {
+      padding: 12px 15px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      width: 200px;
+      transition: border-color 0.3s ease;
+    }
+
+    .filter-section select:focus, .filter-section input:focus {
+      border-color: #3b82f6;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+
+    .filter-section .go-button {
+      background-color: #3b82f6;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .filter-section .go-button:hover {
+      background-color: #2563eb;
+    }
+
+    .invoice-summary {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 30px;
+    }
+
+    .total-invoices {
+      border: 1px solid #e0e0e0;
+      padding: 20px;
+      text-align: center;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+    }
+
+    .sort-section {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 25px;
+    }
+
+    .filter-buttons button {
+      background-color: #3b82f6;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .filter-buttons button:hover {
+      background-color: #2563eb;
+    }
+
+    .sort-by select {
+      padding: 10px 15px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+    }
+
+    th, td {
+      border: 1px solid #e0e0e0;
+      padding: 12px 15px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f3f4f6;
+      font-weight: 600;
+    }
+
+    .dialog-content {
+      background-color: white;
+      width: 60%;
+      margin: 10% auto;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .dialog-header h2 {
+      margin-bottom: 20px;
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .dialog-footer {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 25px;
+    }
+
+    .dialog-footer button {
+      background-color: #3b82f6;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .dialog-footer button:hover {
+      background-color: #2563eb;
+    }
+
+    .bill-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 0;
+    }
+
+    .manage-transaction-btn {
+      background-color: #3b82f6;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .manage-transaction-btn:hover {
+      background-color: #2563eb;
+    }
+
+    .generate-bill-link {
+      display: inline-block;
+      background-color: #3b82f6;
+      color: white;
+      padding: 10px 16px;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 500;
+      transition: background-color 0.3s ease;
+    }
+
+    .generate-bill-link:hover {
+      background-color: #2563eb;
+    }
+  </style>
+  <!-- <script th:inline="javascript">
+        //   /<![CDATA[/
+          var filterType = /[[${filterType}]]/ 'all';
+        //   /]]>/
+    </script> -->
+</head>
+<body>
+
+	<div class="sidebar">
+	       <h2>Care and Cure</h2>
+	       <ul>
+	           <li><a href="/adminDashboard" >Home</a></li>
+			   <li><a href="/docHome" >Doctor</a></li>
+               <li><a href="/appHome" >Appointment</a></li>
+               <li><a href="/ui/patients/" >Patient</a></li>			
+	   			<li><a href="/homePayment">Payment</a></li>
+
+			   <li>
+			       <a href="/billing/billHome" onclick="handleBillingClick(event, this);">
+			           Billing
+			       </a>
+			       <ul id="billingDropdown">
+			           <li><a th:href="@{/billing/addNewBill}">Add Bill</a></li>
+			           <li><a th:href="@{/billing/updateBill}">Update Bill</a></li>
+			           <li><a th:href="@{/billing/viewTransaction}">View Bills</a></li>
+			       </ul>
+			   </li>
+
+	           <!--<li>
+	               <a href="#" onclick="toggleDropdown('ambulanceDropdown', this);">
+	                   Ambulance
+	               </a>
+	               <ul id="ambulanceDropdown">
+	                   <li><a href="#" onclick="showAmbulanceList()">Ambulance List</a></li>
+	                   <li><a href="#" onclick="showAddAmbulance()">Add Ambulance</a></li>
+	                   <li><a href="#" onclick="showEditAmbulance()">Edit Ambulance</a></li>
+	               </ul>
+	           </li>
+
+	           <li>
+	               <a href="#" onclick="toggleDropdown('departmentDropdown', this);">
+	                   Department
+	               </a>
+	               <ul id="departmentDropdown">
+	                   <li><a href="#" onclick="showDepartmentList()">Department List</a></li>
+	                   <li><a href="#" onclick="showAddDepartment()">Add Department</a></li>
+	                   <li><a href="#" onclick="showEditDepartment()">Edit Department</a></li>
+	               </ul>
+	           </li>-->
+	       </ul>
+	   </div>
+
+
+	<div class="main-content">
+		<div class="bill-container">
+			<div class="bill-header">
+			    <h1>VIEW BILLS</h1>
+			</div>
+			<form th:action="@{/billing/viewTransaction}" method="get">
+			          <div class="filter-section">
+			              <select id="filter-select" name="filterType">
+			                  <option value="all" th:selected="${filterType == 'all'}">All Bills</option>
+			                  <option value="billId" th:selected="${filterType == 'billId'}">View Bill by ID</option>
+			                  <option value="patientId" th:selected="${filterType == 'patientId'}">View Bill by Patient ID</option>
+			                  <option value="date" th:selected="${filterType == 'date'}">View Bill by Date</option>
+			              </select>
+			              <input type="text" id="filter-input" name="searchQuery" th:value="${searchQuery}" placeholder="Enter Bill ID / Patient ID / Date" />
+			              <button type="submit" class="go-button">Go</button>
+			          </div>
+			      </form>
+
+			      <div class="invoice-summary">
+			          <div class="total-invoices" id="total-invoices">
+			              TOTAL INVOICES<br><span th:text="${totalInvoices}">0</span>
+			          </div>
+			          <div class="total-invoices" id="discounted-invoices">
+			              DISCOUNTED BILLS<br><span th:text="${discountedCount}">0</span>
+			          </div>
+			      </div>
+
+			      <div class="sort-section">
+			          <div class="filter-buttons">
+			              <button id="all-status">ALL</button>
+			              <button id="discounted-status">DISCOUNTED</button>
+			              <button id="unpaid-status">UNPAID</button>
+			          </div>
+			          <div class="sort-by">
+			              SORT BY -
+			              <select id="sort-select" name="sortBy">
+			                  <option value="none" th:selected="${sortBy == 'none'}">None</option>
+			                  <option value="date" th:selected="${sortBy == 'date'}">Date</option>
+			                  <option value="amount" th:selected="${sortBy == 'amount'}">Amount</option>
+			              </select>
+			          </div>
+			      </div>
+
+			      <table>
+			          <thead>
+			              <tr>
+			                  <th>BILL ID</th>
+			                  <th>PATIENT ID</th>
+			                  <th>PATIENT NAME</th>
+			                  <th>DATE</th>
+			                  <th>TOTAL AMOUNT</th>
+			                  <th>DISCOUNT</th>
+			                  <th>GENERATE</th>
+			              </tr>
+			          </thead>
+					  <tbody>
+					      <tr th:each="bill : ${bills}">
+					          <td th:text="${bill.billId}"></td>
+					          <td th:text="${bill.appObj != null ? bill.appObj.patientObj.patientId : 'N/A'}"></td>
+					          <td th:text="${bill.appObj != null ? bill.appObj.patientObj.patientName : 'N/A'}"></td>
+					          <td th:text="${bill.billDate}"></td>
+					          <td th:text="${bill.totalAmount}"></td>
+					          <td th:text="${bill.discountPercentage}"></td>
+							  <td>
+			                      <a href="#" class="generate-bill-link"
+			                         th:attr="data-bill=|{
+			                             &quot;billId&quot;: ${bill.billId},
+			                             &quot;patientId&quot;: ${bill.appObj != null ? bill.appObj.patientObj.patientId : 0},
+			                             &quot;patientName&quot;: &quot;${bill.appObj != null ? bill.appObj.patientObj.patientName : 'N/A'}&quot;,
+			                             &quot;billDate&quot;: &quot;${bill.billDate}&quot;,
+			                             &quot;totalAmount&quot;: ${bill.totalAmount},
+			                             &quot;discountPercentage&quot;: ${bill.discountPercentage},
+			                             &quot;insuranceApplicable&quot;: ${bill.isInsuranceApplicable},
+			                             &quot;description&quot;: &quot;${bill.description}&quot;,
+			                             &quot;medicineFees&quot;: ${bill.medicineFees},
+			                             &quot;testCharges&quot;: ${bill.testCharges},
+			                             &quot;miscellaneousCharge&quot;: ${bill.miscellaneousCharge},
+			                             &quot;consultationFees&quot;: ${bill.consultationFees}
+			                         }|"> 
+			                         GENERATE BILL
+			                      </a>
+			                  </td>
+			              </tr>
+			          </tbody>
+			      </table>
+
+			      <div id="invoice-dialog" style="display: none; position: fixed; z-index: 1; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
+			           <div class="dialog-content">
+			              <div class="dialog-header">
+			                 <h2 id="invoice-dialog-title">Invoice</h2>
+			              </div>
+			              <div class="invoice-info">
+			                 <div>
+			                    <strong>Billed To:</strong>
+			                    <p id="bill-to"></p>
+			                 </div>
+			                 <div>
+			                    <strong>Invoice Date:</strong>
+			                    <p id="invoice-date"></p>
+			                 </div>
+			                 <div>
+			                    <strong>Invoice Number:</strong>
+			                    <p id="invoice-number"></p>
+			                 </div>
+			                 <div>
+			                    <strong>Insurance:</strong>
+			                    <p id="bill-insurance"></p>
+			                 </div>
+			                 <div>
+			                    <strong>Payment Mode:</strong>
+			                    <p id="bill-payment-mode"></p>
+			                 </div>
+			                 <div>
+			                    <strong>Date of Payment:</strong>
+			                    <p id="bill-payment-date"></p>
+			                 </div>
+			              </div>
+			              <table id="invoice-table">
+			                 <thead>
+			                    <tr>
+			                       <th>Description</th>
+			                       <th>Cost</th>
+			                       <th>Qty</th>
+			                       <th>Amount</th>
+			                    </tr>
+			                 </thead>
+			                 <tbody id="invoice-table-body">
+			                 </tbody>
+			              </table>
+			              <div class="dialog-footer">
+			                 <button id="generate-email-button">Generate & Send Email</button>
+			                 <button id="close-dialog-button">Close</button>
+			              </div>
+			           </div>
+			        </div>
+			  </div>
+		  </div>
+	</div>
+
+  
+		  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+		     <script src="https://cdnjs.cloudflare.com/ajax/libs/gijgo/1.9.13/js/gijgo.min.js"></script>
+		     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/gijgo/1.9.13/css/gijgo.min.css">
+		     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
+		     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+		     <script src="/js/plugin.js"></script>
+		     <script src="/js/jquery.mCustomScrollbar.concat.min.js"></script>
+		     <script src="/js/custom.js"></script>
+
+
+			 <script>
+				document.addEventListener("DOMContentLoaded", function () {
+				    console.log("JavaScript Loaded!");
+				    const filterSelect = document.getElementById("filter-select");
+				    
+				    // Get filterType from Thymeleaf or default to 'all'
+				    const filterType = document.body.getAttribute('data-filter-type') || 'all';
+				    console.log("Current filter:", filterType);
+
+				    if (filterType) {
+				        filterSelect.value = filterType;
+				        console.log("✅ Filter set to:", filterSelect.value);
+				    }
+
+				    const allButton = document.getElementById("all-status");
+				    const discountedButton = document.getElementById("discounted-status");
+				    const unpaidButton = document.getElementById("unpaid-status");
+				    const sortSelect = document.getElementById("sort-select");
+
+				    function fetchBills(sortedByDiscount = false, sortBy = 'none', onlyUnpaid = false) {
+				        const urlParams = new URLSearchParams(window.location.search);
+				        
+				        // Preserve existing filter parameters
+				        const filterType = urlParams.get("filterType") || 'all';
+				        const searchQuery = urlParams.get("searchQuery") || '';
+				        
+				        // Clear previous sorting/filter params
+				        urlParams.delete("sortedByDiscount");
+				        urlParams.delete("onlyUnpaid");
+				        urlParams.delete("sortBy");
+				        
+				        // Set new params
+				        if (sortedByDiscount) urlParams.set("sortedByDiscount", "true");
+				        if (onlyUnpaid) urlParams.set("onlyUnpaid", "true");
+				        if (sortBy && sortBy !== "none") urlParams.set("sortBy", sortBy);
+				        
+				        // Preserve filter params
+				        urlParams.set("filterType", filterType);
+				        if (searchQuery) urlParams.set("searchQuery", searchQuery);
+
+				        console.log("Fetching Bills with Parameters:", { 
+				            sortedByDiscount, 
+				            sortBy, 
+				            onlyUnpaid,
+				            filterType,
+				            searchQuery
+				        });
+				        
+				        window.location.href = "/billing/viewTransaction?" + urlParams.toString();
+				    }
+
+				    function getCurrentFilterState() {
+				        const urlParams = new URLSearchParams(window.location.search);
+				        return {
+				            sortedByDiscount: urlParams.get("sortedByDiscount") === "true",
+				            onlyUnpaid: urlParams.get("onlyUnpaid") === "true",
+				            sortBy: urlParams.get("sortBy") || 'none'
+				        };
+				    }
+
+				    // Button event handlers
+				    if (allButton) {
+				        allButton.addEventListener("click", function () {
+				            const { sortBy } = getCurrentFilterState();
+				            fetchBills(false, sortBy, false);
+				        });
+				    }
+
+				    if (discountedButton) {
+				        discountedButton.addEventListener("click", function () {
+				            console.log("🔻 Discounted button clicked");
+				            const { sortedByDiscount, sortBy } = getCurrentFilterState();
+				            fetchBills(!sortedByDiscount, sortBy, false);
+				        });
+				    }
+
+				    if (unpaidButton) {
+				        unpaidButton.addEventListener("click", function () {
+				            const { onlyUnpaid, sortBy } = getCurrentFilterState();
+				            fetchBills(false, sortBy, !onlyUnpaid);
+				        });
+				    }
+
+				    if (sortSelect) {
+				        sortSelect.addEventListener("change", function () {
+				            const { sortedByDiscount, onlyUnpaid } = getCurrentFilterState();
+				            fetchBills(sortedByDiscount, this.value, onlyUnpaid);
+				        });
+				    }
+
+				    // Rest of your existing code...
+			
+
+			        // ==================Dynamic Input Field Change for Filter========================
+			        const filterInput = document.getElementById("filter-input");
+			        function updateInputField() {
+			            const selectedValue = filterSelect.value;
+			            console.log("Filter selected:", selectedValue);
+			            if ($(filterInput).data("datepicker")) {
+			                $(filterInput).datepicker("destroy");
+			            }
+			            if (selectedValue === "date") {
+			                filterInput.value = "";
+			                filterInput.setAttribute("placeholder", "Select a date");
+			                $(filterInput).datepicker({
+			                    uiLibrary: 'bootstrap4',
+			                    format: 'dd/mm/yyyy',
+			                    autoclose: true
+			                });
+			            } else {
+			                filterInput.removeAttribute("readonly");
+			                filterInput.value = "";
+			                if (selectedValue === "billId") {
+			                    filterInput.setAttribute("placeholder", "Enter Bill ID");
+			                } else if (selectedValue === "patientId") {
+			                    filterInput.setAttribute("placeholder", "Enter Patient ID");
+			                } else {
+			                    filterInput.setAttribute("placeholder", "Enter ID or Date");
+			                }
+			            }
+			        }
+			        updateInputField();
+			        filterSelect.addEventListener("change", updateInputField);
+					
+					
+
+			        // ===========Invoice Dialog Handling===========================
+			        const dialog = document.getElementById("invoice-dialog");
+			        const closeDialogButton = document.getElementById("close-dialog-button");
+
+			        document.querySelectorAll(".generate-bill-link").forEach(link => {
+			            link.addEventListener("click", function (event) {
+			                event.preventDefault();
+			                const billData = JSON.parse(this.getAttribute("data-bill"));
+			                fetchInvoiceData(billData);
+			                dialog.style.display = "block";
+			            });
+			        });
+
+			        if (closeDialogButton) {
+			            closeDialogButton.addEventListener("click", function () {
+			                dialog.style.display = "none";
+			            });
+			        }
+
+			        function fetchInvoiceData(billData) {
+			            console.log(billData);
+			            setTimeout(() => {
+			                document.getElementById("invoice-dialog-title").textContent = "Invoice #" + billData.billId;
+			                document.getElementById("bill-to").textContent = billData.patientName;
+			                document.getElementById("invoice-date").textContent = billData.billDate;
+			                document.getElementById("invoice-number").textContent = billData.billId;
+			                document.getElementById("bill-insurance").textContent = billData.insuranceApplicable;
+			                document.getElementById("bill-payment-mode").textContent = "Credit Card";
+			                document.getElementById("bill-payment-date").textContent = "15/03/2025";
+
+			                const medicineFeesDiscounted = billData.medicineFees * 0.9;
+			                const total = billData.consultationFees + billData.medicineFees + billData.testCharges + billData.miscellaneousCharge;
+
+			                document.getElementById("invoice-table-body").innerHTML = `
+			                    <tr>
+			                        <td>Consultation</td>
+			                        <td>₹${billData.consultationFees}</td>
+			                        <td>1</td>
+			                        <td>₹${billData.consultationFees}</td>
+			                    </tr>
+			                    <tr>
+			                        <td>Medication</td>
+			                        <td>₹${billData.medicineFees}</td>
+			                        <td>1</td>
+			                        <td>₹${medicineFeesDiscounted.toFixed(2)}</td>
+			                    </tr>
+			                    <tr>
+			                        <td>Miscellaneous</td>
+			                        <td>₹${billData.miscellaneousCharge}</td>
+			                        <td>1</td>
+			                        <td>₹${billData.miscellaneousCharge}</td>
+			                    </tr>
+			                    <tr>
+			                        <td>Tests</td>
+			                        <td>₹${billData.testCharges}</td>
+			                        <td>1</td>
+			                        <td>₹${billData.testCharges}</td>
+			                    </tr>
+			                    <tr>
+			                        <td><b>Total</b></td>
+			                        <td>₹${total}</td>
+			                        <td></td>
+			                        <td><b>₹${billData.totalAmount}</b></td>
+			                    </tr>
+			                `;
+			            }, 500);
+			        }
+
+			        document.getElementById("generate-email-button").addEventListener("click", function() {
+			            let billId = getBillId();
+			            if (!billId) {
+			                alert("Please enter a valid Bill ID!");
+			                return;
+			            }
+			            console.log("Sending request to http://localhost:8080/bills/generateBill with Bill ID:", billId);
+			            fetch("http://localhost:8080/bills/generateBill", {
+			                method: "POST",
+			                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+			                body: new URLSearchParams({ billId: billId })
+			            })
+			            .then(response => response.text())
+			            .then(data => {
+			                console.log("Response received:", data);
+			                alert("Bill generated and sent successfully!");
+			                let pdfPath = data.split("PDF Path: ")[1];
+			                if (pdfPath) {
+			                    let downloadLink = document.createElement("a");
+			                    downloadLink.href = "/download?file=" + encodeURIComponent(pdfPath);
+			                    downloadLink.innerText = "Download PDF";
+			                    downloadLink.target = "_blank";
+			                    document.body.appendChild(downloadLink);
+			                }
+			            })
+			            .catch(error => {
+			                console.error("Error:", error);
+			                alert("Error generating bill: " + error);
+			            });
+			        });
+
+			        function getBillId() {
+			            let billElement = document.getElementById("invoice-number");
+			            if (!billElement) {
+			                console.error("Error: Invoice number field not found!");
+			                return null;
+			            }
+			            let billId = billElement.innerText.trim();
+			            if (!billId) {
+			                console.error("Error: Invoice number is empty!");
+			                return null;
+			            }
+			            return billId;
+			        }
+			    });
+			    </script>
+				<script>
+							        function toggleDropdown(id, element) {
+							            var dropdown = document.getElementById(id);
+							            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+							            element.querySelector('.arrow').classList.toggle('rotate');
+							        }
+
+							        function handleBillingClick(event, element) {
+							            if (!event.target.classList.contains('arrow')) {
+							                window.location.href = "/billing/billHome";
+							            } else {
+							                event.preventDefault();
+							                toggleDropdown('billingDropdown', element);
+							            }
+							        }
+							    </script>
+  </body>
+  </html>

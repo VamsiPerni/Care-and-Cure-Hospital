@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add Bill</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6">
+
+<!-- Search Form -->
+<div class="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-6 mb-6">
+    <h2 class="text-xl font-bold mb-4">Search Patient by ID</h2>
+    <form method="get" action="/billing/search" class="flex gap-2">
+        <input type="number" name="patientId" placeholder="Enter Patient ID" required
+               class="w-full p-2 border border-gray-300 rounded-md" />
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+            Search
+        </button>
+    </form>
+</div>
+
+<!-- Billing Summary and Add Bill Form -->
+<div th:if="${patientId}" class="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-6">
+
+    <h2 class="text-2xl font-bold mb-4">
+        Billing Summary for Patient ID: <span th:text="${patientId}"></span>
+    </h2>
+
+    <!-- No Bills Message -->
+    <div th:if="${#lists.isEmpty(bills)}">
+        <p class="text-center text-red-500 font-semibold mb-4">No bills found for this patient.</p>
+    </div>
+
+    <!-- Bill Table -->
+    <table th:if="${!#lists.isEmpty(bills)}" class="w-full border-collapse border border-gray-300 mb-6">
+        <thead>
+        <tr class="bg-gray-200">
+            <th class="border border-gray-300 px-4 py-2">Bill ID</th>
+            <th class="border border-gray-300 px-4 py-2">Date</th>
+            <th class="border border-gray-300 px-4 py-2">Description</th>
+            <th class="border border-gray-300 px-4 py-2">Consultation Fees</th>
+            <th class="border border-gray-300 px-4 py-2">Medicine Fees</th>
+            <th class="border border-gray-300 px-4 py-2">Test Charges</th>
+            <th class="border border-gray-300 px-4 py-2">Total Amount</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="bill : ${bills}" class="text-center bg-white hover:bg-gray-100">
+            <td class="border border-gray-300 px-4 py-2" th:text="${bill.billId}"></td>
+            <td class="border border-gray-300 px-4 py-2" th:text="${bill.billDate}"></td>
+            <td class="border border-gray-300 px-4 py-2" th:text="${bill.description}"></td>
+            <td class="border border-gray-300 px-4 py-2" th:text="${bill.consultationFees}"></td>
+            <td class="border border-gray-300 px-4 py-2" th:text="${bill.medicineFees}"></td>
+            <td class="border border-gray-300 px-4 py-2" th:text="${bill.testCharges}"></td>
+            <td class="border border-gray-300 px-4 py-2 font-bold text-green-600" th:text="${bill.totalAmount}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Add New Bill Form -->
+	
+	<h3 class="text-xl font-semibold mt-6 mb-3">Add a New Bill</h3>
+	<form id="billForm" th:action="@{/billing/add}" method="post" class="bg-gray-50 p-4 rounded-md shadow-md">
+	    
+	    <div>
+	        <label class="block font-semibold">Select Appointment:</label>
+	        <select name="appointmentId" required class="w-full p-2 border border-gray-300 rounded-md">
+	            <option th:each="appointment : ${appointments}"
+	                    th:value="${appointment.appointmentId}"
+	                    th:text="${appointment.appDate}">
+	            </option>
+	        </select>
+	    </div>
+
+	    <input type="hidden" name="patientId" th:value="${patientId}" />
+
+	    <div class="grid grid-cols-2 gap-4 mt-4">
+	        <div>
+	            <label class="block font-semibold">Consultation Fees:</label>
+	            <input type="number" name="consultationFees" required class="w-full p-2 border border-gray-300 rounded-md">
+	        </div>
+	        <div>
+	            <label class="block font-semibold">Medicine Fees:</label>
+	            <input type="number" name="medicineFees" class="w-full p-2 border border-gray-300 rounded-md">
+	        </div>
+	        <div>
+	            <label class="block font-semibold">Test Charges:</label>
+	            <input type="number" name="testCharges" class="w-full p-2 border border-gray-300 rounded-md">
+	        </div>
+	        <div>
+	            <label class="block font-semibold">Miscellaneous Charges:</label>
+	            <input type="number" name="miscellaneousCharge" class="w-full p-2 border border-gray-300 rounded-md">
+	        </div>
+	        <div class="col-span-2">
+	            <label class="block font-semibold">Description:</label>
+	            <input type="text" name="description" required class="w-full p-2 border border-gray-300 rounded-md">
+	        </div>
+	        <div>
+	            <label class="block font-semibold">Is Insurance Applicable?</label>
+	            <select name="isInsuranceApplicable" class="w-full p-2 border border-gray-300 rounded-md">
+	                <option value="true">Yes</option>
+	                <option value="false">No</option>
+	            </select>
+	        </div>
+	       
+	        <div>
+	            <label class="block font-semibold">Apply Tax?</label>
+	            <select name="tax" class="w-full p-2 border border-gray-300 rounded-md">
+	                <option value="true">Yes</option>
+	                <option value="false">No</option>
+	            </select>
+	        </div>
+	    </div>
+
+	    <button type="submit" id="submitBtn" class="mt-4 w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700">
+	        Add Bill
+	    </button>
+	</form>
+
+</div>
+
+<!-- Prevent multiple submissions -->
+<script>
+    document.getElementById("billForm")?.addEventListener("submit", function () {
+        document.getElementById("submitBtn").disabled = true;
+    });
+</script>
+
+</body>
+</html>

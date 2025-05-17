@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Daily Payment Summary</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+              body{
+           background-image: url('/images/img6.jpg');
+            background-size: cover ;
+            
+            background-position: center;
+            font-family: 'Arial', sans-serif;
+            color: #fff;
+        }
+        .myContainer{
+            background-color: rgba(0, 0, 0, 0.29);
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    width: 62%;
+    text-align: center;
+    margin-top: 80px !important;
+        }
+        .myTable{
+            color:rgb(249, 241, 230) ;
+             }
+    </style>
+</head>
+<body>
+    <div class="container mt-5 myContainer">
+        <h2>Daily Payment Summary</h2>
+
+        <!-- Select Date -->
+        <div class="form-group">
+            <label for="date">Select Date:</label>
+            <input type="date" id="date" class="form-control" required>
+        </div>
+		<div class="mt-3">
+       		 <button onclick="fetchSummary()" class="btn btn-primary">Fetch Summary</button>
+		     <a th:href="@{/homePayment}" class="btn btn-secondary">Go to Home</a>
+		 </div>
+
+        <hr>
+
+        <!-- Display Payment Summary -->
+        <div id="summaryContainer" style="display: none;">
+            <h4>Payment Summary for <span id="summaryDate"></span></h4>
+            <table class="table table-bordered myTable">
+                <thead>
+                    <tr>
+                        <th>Cash Total</th>
+                        <th>Credit Card Total</th>
+                        <th>Debit Card Total</th>
+                        <th>UPI Total</th>
+                        <th>Total Amount</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td id="cashTotal"></td>
+                        <td id="creditCardTotal"></td>
+                        <td id="debitCardTotal"></td>
+                        <td id="upiTotal"></td>
+                        <td id="totalAmount"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Display Errors -->
+        <div id="errorContainer" class="alert alert-danger mt-3" style="display: none;"></div>
+    </div>
+
+<script>
+    function fetchSummary() {
+        let selectedDate = document.getElementById("date").value;
+        if (!selectedDate) {
+            alert("⚠️ Please select a date.");
+            return;
+        }
+
+        let apiUrl = `http://localhost:7212/dailyPaymentSummary?date=${selectedDate}`;
+
+        fetch(apiUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Failed to fetch payment summary.");
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Update the table with data from the API response
+                document.getElementById("summaryDate").innerText = data.date;
+                document.getElementById("cashTotal").innerText = data.cashTotal;
+                document.getElementById("creditCardTotal").innerText = data.creditCardTotal;
+                document.getElementById("debitCardTotal").innerText = data.debitCardTotal;
+                document.getElementById("upiTotal").innerText = data.upiTotal;
+                document.getElementById("totalAmount").innerText = data.totalAmount;
+
+                document.getElementById("summaryContainer").style.display = "block";
+                document.getElementById("errorContainer").style.display = "none";
+            })
+            .catch(error => {
+                document.getElementById("summaryContainer").style.display = "none";
+                document.getElementById("errorContainer").innerText = "❌ Error fetching data!";
+                document.getElementById("errorContainer").style.display = "block";
+                console.error("Error:", error);
+            });
+    }
+</script>
+
+</body>
+</html>

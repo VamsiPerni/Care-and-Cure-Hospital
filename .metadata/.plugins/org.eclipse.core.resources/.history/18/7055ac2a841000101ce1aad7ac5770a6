@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add Transaction</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-image: url('/images/payment.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .form-container {
+            background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black */
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            width: 400px;
+            text-align: center;
+        }
+
+        .form-container h2 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #f8f9fa;
+            font-weight: 600;
+        }
+
+        label {
+            font-size: 16px;
+            font-weight: 500;
+            color: #f8f9fa;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0 20px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            width: 100%;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        a {
+            display: block;
+            margin-top: 20px;
+            color: #f8f9fa;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        a:hover {
+            color: #007bff;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: -10px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="form-container">
+        <h2>Add Payment</h2>
+
+        <form th:action="@{/addTransaction}" th:object="${payment}" method="post">
+        <label for="amountPaid">Amount Paid:</label>
+        <input type="number" id="amountPaid" name="amountPaid" th:field="*{amountPaid}" step="0.01" min = "1" required />
+        <br>
+
+        <label for="paymentMethod">Payment Method:</label>
+        <select id="paymentMethod" name="paymentMethod" th:field="*{paymentMethod}" required>
+            <option value="Credit Card">Credit Card</option>
+            <option value="Debit Card">Debit Card</option>
+            <option value="UPI">UPI</option>
+            <option value="Cash">Cash</option>
+        </select>
+        <br>
+
+        <label for="paymentStatus">Payment Status:</label>
+        <select id="paymentStatus" name="paymentStatus" th:field="*{paymentStatus}" required>
+            <option value="Completed">Completed</option>
+            <option value="Pending">Pending</option>
+            <option value="Failed">Failed</option>
+        </select>
+        <br>
+
+        <button type="submit">Submit Payment</button>
+    </form>
+
+        <a th:href="@{/homePayment}">Home</a>
+
+        <div th:if="${message}" class= "alert alert-sucess">
+            <p th:text="${message}"></p>
+        </div>
+    </div>
+</body>
+</html>

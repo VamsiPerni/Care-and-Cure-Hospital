@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>View Appointments by Patient</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	<link rel="stylesheet" href="/css/styleApp.css">
+	<style>
+		body {
+			background-image: url('img/addbg.webp');
+			background-size: 20%;
+			/*background: #e3f2fd;*/
+			font-family: 'Poppins', sans-serif;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 100vh;
+			margin: 0;
+		}
+
+		.header {
+			background: rgba(0, 123, 255, 0.9);
+			color: white;
+			text-align: center;
+			padding: 20px;
+			font-size: 30px;
+			font-weight: bold;
+			position: fixed;
+			top: 0;
+			width: 100%;
+			height: 12%;
+			z-index: 1000;
+			box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+		}
+
+		.container {
+			display: flex;
+			background: white;
+			border-radius: 10px;
+			box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+			overflow: hidden;
+			max-width: 900px;
+			width: 100%;
+		}
+
+		.left-section {
+			width: 40%;
+			background: url('/img/bypatient.jpg') no-repeat center center;
+			background-size: 80%;
+		}
+
+		.right-section {
+			width: 50%;
+			padding: 40px;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+		}
+
+		h2 {
+			color: #007bff;
+			font-weight: bold;
+			text-align: center;
+		}
+
+		.btn-primary {
+			background-color: #007bff;
+			border: none;
+			width: 100%;
+			font-size: 16px;
+			transition: 0.3s;
+		}
+
+		.btn-primary:hover {
+			background-color: #004494;
+		}
+
+		#appointmentDetails {
+			max-height: 300px; /* Adjust height as needed */
+			overflow-y: auto;
+			padding: 10px;
+			border: 1px solid #ddd;
+			border-radius: 5px;
+			background: #f9f9f9;
+		}
+
+		#error-message {
+			display: none;
+		}
+	</style>
+	<script>
+
+		function fetchAppointment() {
+			let patientId = document.getElementById("patientId").value.trim();
+			let appointmentDetails = document.getElementById("appointmentDetails");
+			let errorMessage = document.getElementById("error-message");
+
+			if (!patientId) {
+				errorMessage.textContent = "Please enter a Patient ID.";
+				errorMessage.style.display = "block";
+				appointmentDetails.innerHTML = "";
+				return;
+			}
+
+			fetch(`http://localhost:8080/viewAppointmentsByPatient/${patientId}`)
+				.then(response => {
+					if (!response.ok) {
+						throw new Error(`No appointments found for Patient ID: ${patientId}`);
+					}
+					return response.json();
+				})
+				.then(data => {
+					console.log("API Response:", data); // Debugging step
+
+					if (!data || (Array.isArray(data) && data.length === 0) || !data.appointmentId) {
+						throw new Error("No appointment data received.");
+					}
+
+					errorMessage.style.display = "none";
+					let appointmentsHTML = "";
+
+					// Check if data is an array or a single appointment object
+					const appointmentsArray = Array.isArray(data) ? data : [data];  // Ensure we always handle an array
+
+					appointmentsArray.forEach(appointment => {
+						const getValue = (value) => value != null && value !== "" ? value : "NA";
+						appointmentsHTML += `
+		                    <p><strong>ID:</strong> ${getValue(appointment.appointmentId)}</p>
+							<p><strong>Patient Name:</strong> ${getValue(appointment.patient.patientName)}</span></p>
+							<p><strong>Doctor Name:</strong> Dr.${getValue(appointment.doctor.doctorName.firstName)} ${getValue(appointment.doctor.doctorName.lastName)}</span></p>
+		                    <p><strong>Date:</strong> ${getValue(appointment.appointmentDate)}</p>
+		                    <p><strong>Slot:</strong> ${getValue(appointment.slot)}</p>
+		                    <p><strong>Reason:</strong> ${getValue(appointment.reasonForVisit)}</p>
+		                    <p><strong>Status:</strong> ${getValue(appointment.status)}</p>
+		                    <hr />
+		                `;
+					});
+					appointmentDetails.innerHTML = appointmentsHTML;
+				})
+				.catch(error => {
+					console.error("Error:", error.message); // Log error in console
+					appointmentDetails.innerHTML = "";
+					errorMessage.textContent = error.message;
+					errorMessage.style.display = "block";
+				});
+		}
+
+
+	</script>
+</head>
+
+<body>
+	<div class="header"> Appointments By Patient
+		<a href="/appHome" class="home-icon">
+			<img src="/img/home-icon.png" alt="Home" />
+		</a>
+	</div>
+
+	<div class="container">
+		<div class="left-section"></div>
+		<div class="right-section">
+			<!--<h2>View Appointment by Patient</h2>-->
+			<div class="form-group">
+				<label for="patientId">Enter Patient ID:</label>
+				<input type="text" id="patientId" class="form-control" required>
+			</div>
+			<div id="error-message" class="alert alert-danger"></div>
+			<button onclick="fetchAppointment()" class="btn btn-primary">Search</button>
+			<div id="appointmentDetails" class="mt-4"></div>
+		</div>
+	</div>
+</body>
+
+</html>
